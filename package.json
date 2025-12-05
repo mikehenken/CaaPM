@@ -6,7 +6,7 @@
   "publisher": "cursor-user",
   "repository": {
     "type": "git",
-    "url": "https://github.com/placeholder/cursor-agent-pm"
+    "url": "https://github.com/mikehenken/CaaPM"
   },
   "engines": {
     "vscode": "^1.85.0"
@@ -92,7 +92,17 @@
     "pretest": "npm run compile-tests && npm run compile && npm run lint",
     "check-types": "tsc --noEmit",
     "lint": "eslint src --ext ts",
-    "test": "vscode-test"
+    "test": "vscode-test",
+    "version:patch": "npm version patch -m \"chore: release v%s\"",
+    "version:minor": "npm version minor -m \"chore: release v%s\"",
+    "version:major": "npm version major -m \"chore: release v%s\"",
+    "version:prepatch": "npm version prepatch --preid=beta -m \"chore: pre-release v%s\"",
+    "version:preminor": "npm version preminor --preid=beta -m \"chore: pre-release v%s\"",
+    "version:premajor": "npm version premajor --preid=rc -m \"chore: pre-release v%s\"",
+    "version:prerelease": "npm version prerelease --preid=beta -m \"chore: pre-release v%s\"",
+    "release:patch": "npm run version:patch && git push --follow-tags",
+    "release:minor": "npm run version:minor && git push --follow-tags",
+    "release:major": "npm run version:major && git push --follow-tags"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.6",
