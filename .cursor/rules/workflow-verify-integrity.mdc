@@ -1,0 +1,16 @@
+---
+description: Workflow for project integrity check
+globs: **/*
+---
+
+# Verify Integrity Workflow
+
+1. // turbo
+   Run `npm run lint` to check for code style issues.
+2. // turbo
+   Run `npm run type-check` (tsc --noEmit) to check for TypeScript errors.
+3. // turbo
+   Run `npm run test` to run unit and integration tests.
+4. // turbo
+   Run `npm run test:e2e` to run end-to-end tests (headless).
+5. Report the summary of results. If any step fails, stop and report the error.

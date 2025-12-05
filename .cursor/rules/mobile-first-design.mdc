@@ -1,0 +1,18 @@
+---
+alwaysApply: false
+---
+# Mobile First Design
+
+## Mobile First Design
+
+### CSS Strategy
+
+1. **Default Styles**: Write styles for the smallest screen first (default).
+
+2. **Media Queries**: Use `min-width` overrides for larger screens.
+
+   - `@media (min-width: 768px) { ... }`
+
+3. **Touch Targets**: Ensure all interactive elements are at least 44x44px.
+
+4. **Layout**: Avoid fixed widths. Use percentages, Flexbox, or Grid.

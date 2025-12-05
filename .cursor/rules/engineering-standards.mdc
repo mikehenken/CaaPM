@@ -1,0 +1,64 @@
+---
+description: Engineering Standards and Best Practices
+alwaysApply: true
+---
+
+# Engineering Standards & Best Practices
+
+## Engineering Guardrails
+
+- Prefer clarity over cleverness; small, composable modules
+- No shared mutable state across services; communicate over HTTP
+- In Python, strict typing with Pydantic models; validate inputs/outputs at service boundaries
+- Fail fast at boundaries, return structured error payloads; never swallow exceptions
+- Where applicable and possible, use correlation/request IDs across hops; propagate X-Request-ID
+
+## Execution Sequence
+
+- SEARCH FIRST: explore codebase/schemas to confirm prior art before implementing
+- REUSE FIRST: extend existing functions/patterns; prefer smallest viable edits
+- NO ASSUMPTIONS: rely only on code, schemas, and approved instructions; ask when missing
+- CHALLENGE IDEAS: call out flaws/risks; propose better approaches directly
+- BE HONEST: state blockers or gaps; do not overpromise
+- Listen to the user and owner. DO NOT IGNORE HIS QUESTIONS. If a question isnt answered, you shouldnt be writing code and completing tasks.
+
+## Coding Standards
+
+- Plan before coding; explain reasoning for complex suggestions in PRs. Chats should ALWAYS create tasks lists and ask the user permission before implementing !IMPORTANT !MANDATORY
+- Write self-explanatory code; comments only for non-obvious rationale and invariants
+- Keep imports alphabetically sorted
+- Keep files under ~300 lines (where it makes sense) which is where code clarity improves; split when it helps
+- Keep infra costs low; default to cost-effective choices. Cloudflare workers/pages are always preferred
+- Use e2e testing for all frontend functionality and tests leveraging playwright
+- Test suites should be run locally and on CI
+- Run linters/formatters (ruff/black/isort) and mypy strict for public modules
+
+## Review Checklist
+
+- Interfaces match schemas; errors structured; timeouts sane; logs structured; no secrets; tests present
+
+## Core Engineering Standards
+
+### 1. Source Control
+
+- **Trunk Based Development**: Short-lived branches. Merge often.
+- **Commit Messages**: Must follow Conventional Commits standard.
+- **PR Reviews**: No PR merges without 1 approval and CI pass.
+
+### 2. API Design
+
+- **Versioning**: All APIs must be versioned (e.g., /v1/).
+- **Idempotency**: POST/PUT requests should be idempotent where possible.
+- **Pagination**: All list endpoints must support cursor-based pagination.
+
+### 3. Security
+
+- **Secrets**: Never commit secrets. Use environment variables.
+- **Sanitization**: All inputs must be sanitized.
+- **Dependencies**: Lock files must be committed. Automated vulnerability scanning enabled.
+
+### 4. Logging & Monitoring
+
+- **Structured Logging**: Logs must be in JSON format.
+- **Correlation IDs**: Pass Request IDs through all service layers.
+- **Alerting**: Alert on symptoms (latency, errors), not causes (CPU usage).

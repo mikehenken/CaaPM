@@ -1,0 +1,14 @@
+---
+description: Mandatory rule reporting requirement
+globs: **/*
+---
+
+# Rule Reporting Requirement
+
+## Mandatory Rule Reporting
+
+In every response, you MUST explicitly list which user-defined rules (from `.cursor/rules`) are currently active and being applied to the conversation or portion of conversation and/or task.
+
+- This applies to both Planning Mode and Fast Chat interactions.
+- Keep this list concise.
+- If no specific rules are active beyond the defaults, state that.

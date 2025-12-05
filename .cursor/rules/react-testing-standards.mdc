@@ -1,0 +1,80 @@
+---
+alwaysApply: true
+---
+# React & E2E Testing Standards
+
+You are an expert in React testing using Vitest/Jest, React Testing Library (RTL), and Playwright.
+
+## 1. Component & Integration Testing (Vitest + React Testing Library)
+
+### Core Philosophy
+- **Test Behavior, Not Implementation**: Avoid testing internal component state, private methods, or implementation details. Focus on what the user sees and interacts with.
+- **Accessibility First**: Use `getByRole` queries whenever possible. This ensures the application is accessible to screen readers.
+- **Integration over Shallow**: Render the full component tree (including children) whenever possible. Mock only network requests and heavy external dependencies.
+
+### Query Priority (The "Testing Library" Way)
+1. `getByRole(role, { name: /.../i })` - Best for accessibility and robustness.
+2. `getByLabelText(...)` - Excellent for form fields.
+3. `getByPlaceholderText(...)` - Acceptable for inputs without labels (though labels are preferred).
+4. `getByText(...)` - Good for non-interactive content (divs, spans).
+5. `getByTestId(...)` - **Last Resort**. Only use if no other semantic query is possible.
+
+### User Interaction
+- **Use `user-event`**: Always use `userEvent.setup()` and async methods (`user.click`, `user.type`) over `fireEvent`. It better simulates real browser behavior (focus, blur, key press events).
+
+### Structure Pattern (Arrange-Act-Assert)
+```tsx
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { MyComponent } from './MyComponent';
+
+test('submits form with correct values', async () => {
+  // ARRANGE
+  const user = userEvent.setup();
+  const handleSubmit = vi.fn();
+  render(<MyComponent onSubmit={handleSubmit} />);
+
+  // ACT
+  await user.type(screen.getByRole('textbox', { name: /email/i }), 'user@example.com');
+  await user.click(screen.getByRole('button', { name: /submit/i }));
+
+  // ASSERT
+  expect(handleSubmit).toHaveBeenCalledWith({ email: 'user@example.com' });
+});
+```
+
+### Mocking Best Practices
+- **Mock Network Requests**: Use MSW (Mock Service Worker) or `vi.mock` for API modules.
+- **Mock Contexts**: If a component relies on `AuthContext` or `ThemeContext`, wrap it in a test provider or a custom render helper.
+- **Don't Mock Children**: Unless they are extremely heavy (e.g., a full map or rich text editor), let child components render to catch integration issues.
+
+## 2. End-to-End (E2E) Testing (Playwright)
+
+### Core Philosophy
+- **Critical User Flows**: E2E tests should cover the "Happy Path" and critical business logic (e.g., Login -> Create Project -> Save).
+- **Isolation**: Each test must be independent. Database state should be reset or unique per test (e.g., create a new user for each test run).
+- **Resilience**: Never use `page.waitForTimeout(5000)`. Use specific locators and web-first assertions that auto-wait.
+
+### Locators
+- Prefer `page.getByRole()` and `page.getByLabel()`.
+- Use **Test IDs** (`data-testid`) for elements that are hard to select consistently (e.g., dynamic wrappers), but prefer accessibility roles first.
+
+### Assertion Best Practices
+- Use "Web-First Assertions" which wait until the condition is met.
+```typescript
+// ✅ GOOD
+await expect(page.getByRole('button', { name: 'Submit' })).toBeVisible();
+await expect(page.getByText('Success')).toHaveCount(1);
+
+// ❌ BAD
+expect(await page.isVisible('button')).toBe(true); // Doesn't retry properly
+```
+
+### Authentication state
+- Use `global-setup` or `storageState` to log in once and reuse credentials, OR programmatically log in via API for speed, avoiding repeated UI login steps unless testing the login page itself.
+
+## 3. General Naming Conventions
+- **Files**: `[ComponentName].test.tsx` or `[feature].spec.ts`.
+- **Tests**: Use descriptive sentences.
+  - `it('should display error when email is invalid', ...)`
+  - `test('user can complete onboarding flow', ...)`

@@ -1,0 +1,12 @@
+---
+description: General workflow rules
+globs: **/*
+---
+
+# Workspace Rules
+- Avoid writing docs unless instructed; if needed, get approval first
+- No emoticons in documentations
+
+# Completion Protocol
+- **ALWAYS** run the build command (e.g., `npm run compile` or `npm run build`) after reporting a task as complete.
+- This ensures the codebase is in a deployable/testable state for others.

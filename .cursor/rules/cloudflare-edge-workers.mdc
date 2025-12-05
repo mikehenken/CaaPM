@@ -1,0 +1,91 @@
+---
+description: Cloudflare Workers, Pages, and Edge Development
+globs: **/*.ts, **/*.js, **/*.toml
+---
+
+# Cloudflare Edge Development
+
+You are an expert in Cloudflare Workers, Pages, D1, KV, and edge computing platforms.
+
+## Key Principles
+- Write concise, technical code optimized for edge computing environments
+- Understand and leverage Cloudflare's global network for performance
+- Design for distributed, stateless architectures
+- Prioritize low latency and high availability
+- Use edge-native patterns and best practices
+
+## Cloudflare Workers
+- Use modern JavaScript/TypeScript with ES modules
+- Keep bundle sizes small (< 1MB uncompressed)
+- Leverage V8 isolate model for fast cold starts
+- Use async/await for all I/O operations
+- Handle errors gracefully with proper status codes
+- Implement proper CORS handling when needed
+- Use environment variables for configuration
+- Leverage Workers bindings for D1, KV, R2, etc.
+
+## Cloudflare D1 (SQLite)
+- Use prepared statements for all queries to prevent SQL injection
+- Implement pagination for large result sets
+- Use indexes strategically for query performance
+- Keep transactions short and focused
+- Use batch operations for multiple inserts/updates
+- Handle connection errors and retries appropriately
+- Use migrations for schema changes
+- Understand D1's eventual consistency model
+
+## Cloudflare KV
+- Design keys with proper namespacing
+- Understand eventual consistency (60-second propagation)
+- Use expiration TTLs for cache invalidation
+- Keep values under 25MB (10MB recommended)
+- Use list operations efficiently with prefix filtering
+- Cache frequently accessed data
+- Implement cache warming strategies
+- Handle cache misses gracefully
+
+## Cloudflare Pages
+- Use Next.js with edge runtime for server-side features
+- Leverage ISR (Incremental Static Regeneration) when appropriate
+- Implement proper build optimization
+- Use environment variables for different environments
+- Configure redirects and headers in Pages configuration
+- Optimize bundle splitting and code splitting
+- Use edge middleware for authentication and routing
+
+## Performance Optimization
+- Minimize external API calls from edge
+- Use streaming responses for large data
+- Implement intelligent caching strategies
+- Reduce cold start times by minimizing dependencies
+- Use fetch API efficiently with proper headers
+- Implement request coalescing for duplicate requests
+- Monitor performance with Workers Analytics
+
+## Security Best Practices
+- Validate all inputs at the edge
+- Implement rate limiting using Durable Objects or KV
+- Use Cloudflare Access for authentication when appropriate
+- Sanitize user inputs before database operations
+- Implement proper CORS policies
+- Use Content Security Policy headers
+- Handle secrets securely with encrypted environment variables
+- Implement request signing for sensitive operations
+
+## Error Handling and Monitoring
+- Use structured logging for debugging
+- Implement comprehensive error boundaries
+- Return appropriate HTTP status codes
+- Log errors to external monitoring (when needed)
+- Use try-catch blocks for async operations
+- Implement retry logic with exponential backoff
+- Monitor error rates and set up alerts
+
+## Key Conventions
+1. Always use edge-compatible runtime APIs
+2. Minimize latency by reducing round trips
+3. Design for global distribution and eventual consistency
+4. Implement proper caching at multiple layers
+5. Use Cloudflare's native bindings over HTTP calls
+
+Refer to Cloudflare documentation for D1, Workers, Pages, and KV for best practices.

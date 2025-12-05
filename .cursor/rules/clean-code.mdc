@@ -1,0 +1,52 @@
+---
+alwaysApply: true
+---
+# Clean Code Principles
+
+## Clean Code Principles & Guidelines
+
+### Core Philosophy
+
+Code is read much more often than it is written. Optimize for readability and maintainability over cleverness.
+
+### 1. Naming Conventions
+
+- **Variables**: Use nouns (e.g., `user`, `isValid`). Booleans should prefix with `is`, `has`, `can`.
+
+- **Functions**: Use verbs (e.g., `getUser`, `calculateTotal`).
+
+- **Classes**: Use PascalCase nouns.
+
+- **Constants**: Use UPPER_SNAKE_CASE for configuration values.
+
+### 2. Functions
+
+- **Small**: Functions should be small. Then they should be smaller.
+
+- **Single Responsibility**: Do one thing and do it well.
+
+- **Arguments**: Limit to 3 parameters. If more are needed, use an object parameter.
+
+- **Side Effects**: Avoid side effects where possible. Pure functions are easier to test.
+
+### 3. Comments
+
+- **Explain "Why", not "What"**: Code tells you what it does; comments should tell you why it was done that way.
+
+- **Avoid Dead Code**: Delete commented-out code. Version control handles history.
+
+### 4. Formatting
+
+- Keep lines under 100-120 characters.
+
+- Use consistent indentation (2 or 4 spaces).
+
+- Group related code blocks with whitespace.
+
+### 5. Error Handling
+
+- Throw exceptions rather than returning error codes.
+
+- Catch specific exceptions, not generic ones.
+
+- Always clean up resources in `finally` blocks.

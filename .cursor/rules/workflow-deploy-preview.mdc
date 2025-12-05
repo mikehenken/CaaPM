@@ -1,0 +1,15 @@
+---
+description: Workflow for deploying to Cloudflare Pages preview
+globs: **/*
+---
+
+# Deploy Preview Workflow
+
+1. Run `npm run test` to ensure unit tests pass.
+2. // turbo
+   Run `npm run build` to verify the build succeeds.
+3. // turbo
+   Run `npx wrangler pages deploy .vercel/output/static --project-name resumai --branch [CURRENT_BRANCH]` (Note: Adjust build output dir based on Next.js config).
+   *Correction*: Since we are using `@cloudflare/next-on-pages`, the command is usually `npm run pages:deploy`.
+   Let's stick to the standard script: `npm run deploy:preview`.
+4. Return the Preview URL to the user.

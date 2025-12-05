@@ -1,0 +1,11 @@
+---
+description: GitHub and CI/CD rules
+globs: **/*
+---
+
+# GitHub Rules
+
+- Conventional Commits; PR template must answer schema/back-compat/timeouts/logging
+- Ensure CI checks: unit, integration, schema validation
+- Should use github actions as optional deployment automation and testing and general CI/CD
+- Should run e2e tests with real world data against the enviornment as much as possible

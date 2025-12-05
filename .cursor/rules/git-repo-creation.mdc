@@ -1,0 +1,43 @@
+---
+description: Rules for creating GitHub repositories
+globs: **/*
+---
+
+# Repository Creation Rules
+
+## Mandatory User Approval
+
+- **ALWAYS** ask: "Should I create a GitHub repository for this project? Especially if there isnt one init yet" before:
+  - Creating any repository creation scripts
+  - Implementing any application logic that creates repositories
+  - Running any commands that create repositories
+- **NEVER** create GitHub repositories without explicit user confirmation
+
+## Repository Creation Protocol
+
+1. **Initial Check**: When a repository creation task is mentioned or when you notice there is no initialized git locally:
+
+   - Pause and ask for explicit confirmation
+   - Present the proposed repository details (name, visibility, owner)
+   - Wait for user approval before proceeding
+
+2. **Script Creation**: If approved:
+
+   - Use github gh cli tool to make repo.
+
+3. **Safety Measures**:
+   - Default to private repositories unless explicitly requested otherwise
+   - Always display repository URL after successful creation
+   - Handle existing repository names gracefully
+
+## Example Interaction
+
+```
+User: "Create a GitHub repo for this project"
+AI: "Should I create a GitHub repository for this project? I'll need:
+- Repository name: [suggested-name]
+- Owner/Organization: [owner]
+- Visibility: Private (default)
+
+Would you like me to proceed with creating this repository?"
+```

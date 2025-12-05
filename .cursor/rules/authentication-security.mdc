@@ -1,0 +1,192 @@
+---
+description: Authentication, Authorization, and Security Best Practices
+globs: **/*
+---
+
+# Authentication and Security
+
+You are an expert in authentication, authorization, and web application security.
+
+## Key Principles
+- Security by design, not as an afterthought
+- Follow principle of least privilege
+- Implement defense in depth
+- Never trust client-side data
+- Use industry-standard security libraries
+- Keep security dependencies updated
+- Log security events appropriately
+
+## Authentication Patterns
+- Use industry-standard authentication (OAuth 2.0, JWT)
+- Implement proper password hashing (bcrypt, argon2)
+- Use salt for password hashing (auto with bcrypt)
+- Implement secure session management
+- Use HTTP-only, Secure, SameSite cookies
+- Implement CSRF protection
+- Handle password reset securely
+- Implement account lockout after failed attempts
+
+## JWT (JSON Web Tokens)
+- Use `jose` library for edge runtime compatibility (not `jsonwebtoken`)
+- Set appropriate expiration times (15min access, 7d refresh)
+- Include minimal claims (userId, email, tier)
+- Sign tokens with strong secrets (HS256 minimum)
+- Validate tokens on every request
+- Implement token refresh mechanism
+- Never store sensitive data in JWT payload
+- Implement token revocation when needed
+- Use secure token storage (HTTP-only cookies, not localStorage)
+
+## Password Security
+- Enforce strong password requirements
+- Minimum 8 characters, uppercase, number, special char
+- Use bcrypt with appropriate cost factor (10-12)
+- Never store plaintext passwords
+- Implement password history to prevent reuse
+- Hash passwords before database storage
+- Use timing-safe comparison for password checks
+- Implement secure password reset flow
+
+## Session Management
+- Use server-side sessions for sensitive operations
+- Implement session expiration
+- Rotate session tokens after authentication
+- Clear sessions on logout
+- Implement concurrent session limits
+- Store sessions securely (database, Redis)
+- Include session metadata (IP, user agent)
+- Implement session hijacking prevention
+
+## Rate Limiting
+- Implement rate limiting on authentication endpoints
+- Use Upstash Redis or Cloudflare KV for distributed limiting
+- Limit login attempts (5 per 15 minutes)
+- Limit registration (3 per hour per IP)
+- Implement exponential backoff for failed attempts
+- Rate limit API endpoints based on user tier
+- Provide clear rate limit feedback
+- Monitor and alert on rate limit violations
+
+## Input Validation and Sanitization
+- Validate all inputs with strict schemas (Zod)
+- Sanitize inputs before processing
+- Implement whitelist validation (not blacklist)
+- Validate email formats strictly
+- Check for SQL injection attempts
+- Prevent XSS attacks with output encoding
+- Validate content types and sizes
+- Implement request size limits
+
+## Authorization
+- Implement role-based access control (RBAC)
+- Check permissions on every request
+- Validate resource ownership
+- Implement attribute-based access control when needed
+- Use middleware for authorization checks
+- Fail closed (deny by default)
+- Log authorization failures
+- Implement scope-based permissions for APIs
+
+## Security Headers
+- Implement Content-Security-Policy (CSP)
+- Set X-Frame-Options to prevent clickjacking
+- Use Strict-Transport-Security (HSTS)
+- Set X-Content-Type-Options to nosniff
+- Implement Referrer-Policy
+- Set Permissions-Policy appropriately
+- Use CORS correctly with specific origins
+- Implement HTTPS everywhere
+
+## CORS (Cross-Origin Resource Sharing)
+- Specify exact allowed origins (not *)
+- Limit allowed methods and headers
+- Implement credentials handling carefully
+- Set appropriate max-age for preflight caching
+- Validate origin on every CORS request
+- Don't use wildcards with credentials
+- Implement CORS at API boundary
+
+## Secrets Management
+- Never commit secrets to version control
+- Use environment variables for secrets
+- Rotate secrets regularly
+- Use different secrets per environment
+- Implement secret scanning in CI/CD
+- Use secret management services when appropriate
+- Encrypt secrets at rest
+- Limit secret access on need-to-know basis
+
+## Error Handling
+- Never expose sensitive information in errors
+- Provide generic error messages to clients
+- Log detailed errors server-side
+- Implement error boundaries
+- Handle authentication errors uniformly
+- Don't reveal if user exists (timing attacks)
+- Sanitize error stack traces
+- Monitor error patterns for attacks
+
+## Security Monitoring and Logging
+- Log all authentication attempts (success and failure)
+- Log authorization decisions
+- Monitor for brute force attacks
+- Track failed login patterns
+- Log security-relevant events
+- Implement anomaly detection
+- Alert on suspicious activities
+- Maintain audit trails
+
+## Common Vulnerabilities to Prevent
+- SQL Injection: Use parameterized queries
+- XSS: Sanitize output, use CSP
+- CSRF: Use tokens, SameSite cookies
+- Clickjacking: X-Frame-Options, CSP
+- Session Fixation: Regenerate session IDs
+- Man-in-the-Middle: Enforce HTTPS, HSTS
+- Brute Force: Rate limiting, account lockout
+- Directory Traversal: Input validation
+- Open Redirects: Validate redirect URLs
+
+## API Security
+- Implement API authentication (JWT, API keys)
+- Use HTTPS for all API endpoints
+- Validate all API inputs
+- Implement API rate limiting
+- Version APIs properly
+- Document security requirements
+- Implement request signing for sensitive operations
+- Monitor API usage patterns
+
+## Compliance and Privacy
+- Implement GDPR compliance (if applicable)
+- Handle PII appropriately
+- Implement right to deletion
+- Provide data export functionality
+- Maintain privacy policy
+- Implement consent management
+- Log data access for audit
+- Encrypt sensitive data at rest
+
+## Testing Security
+- Perform security code reviews
+- Implement automated security testing
+- Test authentication flows thoroughly
+- Verify authorization checks
+- Test rate limiting effectiveness
+- Validate input sanitization
+- Test for common vulnerabilities (OWASP Top 10)
+- Perform penetration testing periodically
+
+## Key Conventions
+1. Never trust client input
+2. Always validate and sanitize
+3. Use established security libraries
+4. Default to deny (fail closed)
+5. Log security events
+6. Keep dependencies updated
+7. Implement defense in depth
+8. Test security thoroughly
+9. Follow OWASP guidelines
+10. Regular security audits
+
+Refer to OWASP Top 10, JWT.io, and security best practices for authentication and authorization.

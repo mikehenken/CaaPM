@@ -1,0 +1,759 @@
+# In-IDE Agent Project Management Extension
+## Feature Roadmap & Ideas
+
+**Version**: 1.0 Draft  
+**Date**: 2024-12-05
+
+---
+
+## Core Features (MVP)
+
+### 1. Chat Integration
+
+#### 1.1 Questionnaire Wizard
+- **Trigger**: `/ticket` or `@ticket-create` in chat
+- **Flow**: Step-by-step prompts for all fields
+- **Smart defaults**: Pre-fill based on open files, recent commits, branch name
+- **Validation**: Real-time validation of GitHub usernames, model names
+
+```
+User: /ticket
+Bot: 📋 Let's create a ticket!
+
+1️⃣ What's the task? (brief description)
+> [user types]
+
+2️⃣ Complexity? 
+   [simple] [task_list] [plan]
+
+3️⃣ Which service?
+   [backend] [frontend] [landing] [infra] [all]
+
+...creates ticket with confirmation...
+```
+
+#### 1.2 Context Injection
+- **Auto-attach**: Ticket context when agent mentions ticket ID
+- **Smart load**: Detect when conversation is about existing ticket
+- **Session binding**: Link chat session to ticket for auto-logging
+
+#### 1.3 Inline Commands
+| Command | Action |
+|---------|--------|
+| `/ticket` | Create wizard |
+| `/ticket TICKET-001` | Load context |
+| `/ticket status` | Show active tickets |
+| `/handoff` | Generate handoff notes |
+| `/review TICKET-001` | Start review workflow |
+| `/estimate TICKET-001 2h` | Update estimate |
+| `/export request` | Export chat as Request.md |
+| `/export tasks` | Export chat as TaskList.md |
+| `/export plan` | Export chat as Implementation_Plan.md |
+
+#### 1.4 Export Chat as Ticket Artifact ⭐ NEW
+
+Convert exploratory chat conversations into structured ticket documentation. The agent analyzes the conversation history and extracts relevant information.
+
+**Commands:**
+| Command | Output | Description |
+|---------|--------|-------------|
+| `/export request` | Request.md | Extract problem statement, context, acceptance criteria |
+| `/export tasks` | TaskList.md | Extract action items, phases, dependencies |
+| `/export plan` | Implementation_Plan.md | Extract architecture decisions, technical approach |
+| `/export discussion` | Discussion.md | Extract decisions, rationale, key findings |
+| `/export all` | Full ticket | Creates new ticket with all artifacts populated |
+
+**Flow Example:**
+```
+User: /export request
+
+Bot: 📤 Analyzing conversation for Request.md...
+
+I found the following from our chat:
+
+┌─────────────────────────────────────────────────────────┐
+│ 📋 EXTRACTED REQUEST                                    │
+├─────────────────────────────────────────────────────────┤
+│ Title: Implement OAuth2 login with Google               │
+│                                                         │
+│ Request:                                                │
+│ Add Google OAuth2 authentication to the login page.     │
+│ Users should be able to sign in with their Google       │
+│ account as an alternative to email/password.            │
+│                                                         │
+│ Context:                                                │
+│ - Discussed in messages 3-12                            │
+│ - User mentioned needing social login for conversion    │
+│ - Existing auth system uses JWT                         │
+│                                                         │
+│ Acceptance Criteria (extracted):                        │
+│ ✓ Google sign-in button on login page                  │
+│ ✓ OAuth2 flow completes successfully                   │
+│ ✓ User profile populated from Google data              │
+│ ✓ Existing JWT system compatible                       │
+│                                                         │
+│ Service: backend, frontend                              │
+│ Complexity: task_list (suggested)                       │
+│ Estimate: 4h (suggested)                                │
+└─────────────────────────────────────────────────────────┘
+
+[✏️ Edit] [📁 Create Ticket] [🔄 Re-analyze] [❌ Cancel]
+```
+
+**Agent Extraction Capabilities:**
+
+| Data Type | Source in Chat | Extraction Method |
+|-----------|----------------|-------------------|
+| **Title** | User's initial question or topic | Summarize main intent |
+| **Request** | Problem description, user requirements | Consolidate all requirement mentions |
+| **Context** | Background info, "because...", "we need..." | Extract reasoning and motivation |
+| **Acceptance Criteria** | "should be able to", "must have", "needs to" | Identify testable requirements |
+| **Tasks** | "first we need to", "then", "steps:" | Extract sequential actions |
+| **Decisions** | "let's go with", "I decided", "better to" | Capture choices made |
+| **Technical Approach** | Code discussions, architecture mentions | Summarize technical strategy |
+| **Blockers/Risks** | "problem is", "issue with", "concerned about" | Identify challenges |
+| **Files Mentioned** | `path/to/file.ts`, code blocks | Link to relevant code |
+| **Estimate** | "should take", "about X hours" | Extract time estimates |
+
+**Smart Features:**
+
+1. **Multi-Chat Export**: Combine multiple related chat sessions
+   ```
+   /export request --include-session abc123 --include-session def456
+   ```
+
+2. **Selective Export**: Choose specific message ranges
+   ```
+   /export tasks --messages 15-42
+   ```
+
+3. **Append to Existing**: Add to an existing ticket
+   ```
+   /export tasks --append-to TICKET-042
+   ```
+
+4. **Template Matching**: Detect which template fits best
+   - Bug report pattern → Bug template
+   - "How do I..." → Task template
+   - "Design a system..." → Plan template
+
+5. **Confidence Scoring**: Show extraction confidence
+   ```
+   Title: "Implement OAuth2" (95% confidence)
+   Estimate: "4h" (60% confidence - inferred from complexity)
+   ```
+
+6. **Gap Detection**: Identify missing information
+   ```
+   ⚠️ Missing from chat:
+   - Acceptance criteria (I'll suggest some)
+   - Service scope (please specify)
+   - Reviewer assignment
+   ```
+
+**Keyboard Shortcut**: `Ctrl+Shift+E` → Export menu
+
+#### 1.5 Auto-Export on Session(s) End ⭐ NEW
+
+Automatically prompt or create ticket artifacts when chat session(s) end. Supports combining multiple related sessions into a single ticket.
+
+**Settings:**
+
+```json
+{
+  "ticketManager.autoExport": {
+    "enabled": true,
+    "trigger": "session_end",      // "session_end" | "idle_timeout" | "manual_only"
+    "idleTimeoutMinutes": 30,      // For idle_timeout trigger
+    "behavior": "prompt",          // "prompt" | "auto_draft" | "auto_create"
+    "minimumMessages": 5,          // Don't trigger for short chats
+    "defaultExportType": "request", // "request" | "tasks" | "plan" | "all"
+    "autoDetectType": true,        // Smart detection of artifact type
+    "excludePatterns": [           // Don't trigger for certain conversations
+      "quick question",
+      "how do I",
+      "what is"
+    ]
+  }
+}
+```
+
+**Behavior Options:**
+
+| Behavior | Description |
+|----------|-------------|
+| `prompt` | Show dialog: "Save this conversation as a ticket?" |
+| `auto_draft` | Silently create draft ticket, notify user |
+| `auto_create` | Create ticket immediately with extracted data |
+| `manual_only` | Never auto-trigger, user must run `/export` |
+
+**Trigger Options:**
+
+| Trigger | When It Fires |
+|---------|---------------|
+| `session_end` | User closes chat panel or starts new conversation |
+| `idle_timeout` | No messages for X minutes |
+| `context_switch` | User opens different file/project |
+| `manual_only` | Only via `/export` command |
+
+**Smart Detection:**
+
+The extension analyzes conversation to determine:
+1. **Should export?** - Was this a substantive work conversation?
+2. **What type?** - Bug fix, feature, investigation, or general Q&A?
+3. **Existing ticket?** - Append to related ticket or create new?
+
+**Flow Example (prompt mode):**
+
+```
+┌─────────────────────────────────────────────────────────┐
+│ 💾 SAVE CONVERSATION?                              [×] │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│ This looks like a substantive work session:             │
+│                                                         │
+│ 📋 Detected: Feature Implementation                     │
+│ 💬 Messages: 23                                         │
+│ ⏱️  Duration: 45 minutes                                │
+│ 📁 Files discussed: 4                                   │
+│                                                         │
+│ ┌─────────────────────────────────────────────────┐    │
+│ │ Suggested title:                                 │    │
+│ │ "Implement user avatar upload with S3"          │    │
+│ └─────────────────────────────────────────────────┘    │
+│                                                         │
+│ Export as:                                              │
+│ ○ Request.md (problem + acceptance criteria)           │
+│ ● Full Ticket (recommended)                            │
+│ ○ Append to TICKET-042                                 │
+│ ○ Don't save                                           │
+│                                                         │
+│ ☑ Remember my choice for similar conversations         │
+│                                                         │
+│        [Create Ticket]  [Edit First]  [Skip]           │
+└─────────────────────────────────────────────────────────┘
+```
+
+**Flow Example (auto_draft mode):**
+
+```
+┌──────────────────────────────────────────┐
+│ 📝 Draft saved: TICKET-047              │
+│    "Implement user avatar upload"        │
+│    [View] [Edit] [Discard]              │
+└──────────────────────────────────────────┘
+```
+
+**Multi-Session Support:**
+
+```
+┌─────────────────────────────────────────────────────────┐
+│ 💾 SAVE CONVERSATION(S)?                           [×] │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│ Related sessions detected:                              │
+│                                                         │
+│ ☑ Session 1 - "OAuth2 research" (32 msgs, 1h ago)      │
+│ ☑ Session 2 - "OAuth2 implementation" (45 msgs, now)   │
+│ ☐ Session 3 - "Quick CSS fix" (8 msgs, 2h ago)         │
+│                                                         │
+│ Combined analysis:                                      │
+│ 📋 Topic: OAuth2 Google Login Implementation            │
+│ 💬 Total: 77 messages across 2 sessions                │
+│ ⏱️  Span: 1 hour 15 minutes                             │
+│                                                         │
+│        [Combine & Create]  [Separate]  [Skip]          │
+└─────────────────────────────────────────────────────────┘
+```
+
+**Session Grouping Logic:**
+- **Semantic similarity**: Sessions discussing same topic
+- **File overlap**: Sessions touching same files
+- **Time proximity**: Sessions within configurable window
+- **Branch matching**: Sessions on same git branch
+- **Manual linking**: User explicitly links sessions
+
+**Additional Settings:**
+
+```json
+{
+  "ticketManager.autoExport": {
+    // ... base settings ...
+    
+    "sessions": {
+      "detectRelated": true,           // Auto-detect related sessions
+      "groupingWindow": "24h",         // Time window for grouping
+      "maxSessionsToGroup": 5,         // Limit sessions per ticket
+      "similarityThreshold": 0.7,      // Semantic similarity score
+      "groupByBranch": true,           // Group sessions on same branch
+      "showSessionPicker": true        // Let user select which to include
+    },
+    
+    "notifications": {
+      "showToast": true,           // Show notification on auto-save
+      "toastDuration": 5000,       // ms before auto-dismiss
+      "soundEnabled": false        // Play sound on save
+    },
+    
+    "drafts": {
+      "location": ".tickets/_drafts",  // Where to store auto-drafts
+      "autoCleanupDays": 7,            // Delete unreviewed drafts after X days
+      "maxDrafts": 20                  // Keep only N most recent
+    },
+    
+    "linking": {
+      "autoLinkBranch": true,         // Link to current git branch
+      "autoLinkFiles": true,          // Include files from conversation
+      "autoAssignOwner": true         // Set current user as owner
+    }
+  }
+}
+```
+
+**Session History Panel:**
+
+```
+┌─────────────────────────────────────────────────────────┐
+│ 📜 SESSION HISTORY                          🔍 [⚙️]    │
+├─────────────────────────────────────────────────────────┤
+│ Today                                                   │
+│  ├─ 🟢 OAuth2 implementation      45 msgs    2:30 PM   │
+│  │     └─ 📎 Related: Session from 1:15 PM             │
+│  ├─ 🟡 OAuth2 research            32 msgs    1:15 PM   │
+│  └─ ⚪ Quick CSS fix               8 msgs   11:00 AM   │
+│                                                         │
+│ Yesterday                                               │
+│  ├─ 🔵 Database schema design     67 msgs    → TICKET-041│
+│  └─ ⚪ README update              12 msgs    (exported) │
+│                                                         │
+│ Legend: 🟢 Active  🟡 Related  ⚪ Standalone  🔵 Linked │
+│                                                         │
+│ [Export Selected] [Group Sessions] [Clear History]     │
+└─────────────────────────────────────────────────────────┘
+```
+
+**Commands:**
+- `/sessions` - View session history
+- `/sessions group` - Manually group selected sessions
+- `/sessions export 1,2,3` - Export specific sessions by ID
+- `/sessions link TICKET-042` - Link sessions to existing ticket
+
+**Command Palette:**
+- `Ticket Manager: Configure Auto-Export`
+- `Ticket Manager: View Auto-Saved Drafts`
+- `Ticket Manager: Clear Draft History`
+
+---
+
+### 2. Panel UI (Sidebar)
+
+#### 2.1 Ticket Dashboard
+```
+┌─────────────────────────────────────┐
+│ 📋 TICKETS                    [+] 🔍│
+├─────────────────────────────────────┤
+│ 🔄 In Progress (2)                  │
+│  ├─ TICKET-042 Hero Section    4h  │
+│  │   👤 @mikehenken 🤖 claude      │
+│  └─ TICKET-039 Auth Flow       2d  │
+│      👤 @jontvoss                   │
+│                                     │
+│ ⏳ Ready (3)                        │
+│  ├─ TICKET-045 Dark Mode       S   │
+│  ├─ TICKET-044 Export PDF      M   │
+│  └─ TICKET-043 Settings        L   │
+│                                     │
+│ 🔍 Review (1)                       │
+│  └─ TICKET-041 API Refactor   ✓✓○ │
+│      Awaiting: @zachafavalava       │
+└─────────────────────────────────────┘
+```
+
+#### 2.2 Ticket Detail View
+- **Tabbed interface**: Request | Tasks | Discussion | Assets | Timeline
+- **Inline editing**: Click to edit fields
+- **Markdown preview**: Rich rendering of ticket content
+- **Asset gallery**: Thumbnail grid with preview on hover
+
+#### 2.3 Kanban Board View
+- **Columns**: Draft → Ready → In Progress → Review → Done
+- **Drag-and-drop**: Move tickets between statuses
+- **Swimlanes**: Group by service, owner, or complexity
+- **WIP limits**: Visual warning when column exceeds limit
+
+#### 2.4 Quick Actions
+- **Right-click context menu** on ticket:
+  - Open in editor
+  - Load into chat
+  - Start work session
+  - Request review
+  - Archive
+- **Bulk actions**: Select multiple, change status, reassign
+
+---
+
+### 3. Search & Filter
+
+#### 3.1 Global Search
+- **Fuzzy search**: Across all ticket content
+- **Query syntax**: `status:in_progress owner:@mike service:frontend`
+- **Recent searches**: Quick access to previous queries
+- **Saved filters**: "My tickets", "Needs review", "Blocked"
+
+#### 3.2 Filter Bar
+```
+[Status ▼] [Service ▼] [Owner ▼] [Complexity ▼] [Has Assets ▼]
+```
+
+#### 3.3 Smart Suggestions
+- "Tickets mentioning this file" (from open editor)
+- "Related to current branch"
+- "Stale tickets (no updates >7 days)"
+
+---
+
+## Advanced Features (v2)
+
+### 4. AI-Powered Features
+
+#### 4.1 Auto-Task Breakdown
+- **Trigger**: "Break down this request"
+- **Action**: AI analyzes Request.md, generates TaskList.md phases
+- **Review**: Human approves/edits before saving
+
+#### 4.2 Scope Creep Detection
+- **Monitor**: Compare current work to original acceptance criteria
+- **Alert**: "⚠️ This change seems outside ticket scope. Create new ticket?"
+
+#### 4.3 Estimate Calibration
+- **Track**: Actual time vs estimated time
+- **Learn**: Suggest estimates based on similar past tickets
+- **Display**: "Based on 5 similar tickets, this usually takes 3-4h"
+
+#### 4.4 Smart Handoff Summary
+- **Trigger**: Conversation length > 30 messages
+- **Generate**: AI summarizes progress, blockers, next steps
+- **Inject**: Auto-populate Discussion.md handoff section
+
+#### 4.5 Conflict Detection
+- **Monitor**: Multiple tickets touching same files
+- **Alert**: "TICKET-042 and TICKET-045 both modify Hero.tsx"
+
+#### 4.6 Review Assistant
+- **Security scan**: AI reviewer checks for OWASP issues
+- **Style check**: AI reviewer validates against code standards
+- **Test coverage**: AI identifies untested paths
+
+---
+
+### 5. Workflow Automation
+
+#### 5.1 Status Triggers
+```yaml
+triggers:
+  - when: all_tasks_complete
+    then: set_status(pending_completion_review)
+  
+  - when: branch_merged
+    then: set_status(done)
+  
+  - when: pr_created
+    then: link_pr_to_ticket
+```
+
+#### 5.2 Notification System
+- **Toast notifications**: Status changes, review requests
+- **Badge count**: Unread updates in sidebar icon
+- **Daily digest**: Summary of ticket activity
+
+#### 5.3 Time Tracking
+- **Auto-start**: Timer begins when ticket loaded in chat
+- **Manual**: Play/pause button in panel
+- **Reports**: Time spent per ticket, per service
+
+#### 5.4 Templates Library
+- **Pre-defined**: Bug report, Feature request, Refactor, Hotfix
+- **Custom**: User-created templates with pre-filled fields
+- **Quick create**: One-click ticket from template
+
+---
+
+### 6. Collaboration Features
+
+#### 6.1 Live Presence
+- **Show**: Which tickets are being worked on
+- **Avatar**: Agent/human indicator
+- **Lock warning**: "Claude is currently working on this ticket"
+
+#### 6.2 Comment System
+- **Inline comments**: On specific lines in Discussion.md
+- **Mentions**: @user or @agent triggers notification
+- **Threads**: Nested replies for discussions
+
+#### 6.3 Review Workflow UI
+```
+┌─────────────────────────────────────┐
+│ 📝 REVIEW: TICKET-042              │
+├─────────────────────────────────────┤
+│ Reviewers:                          │
+│  ✅ @claude-security  Approved      │
+│  ✅ @gemini-qa        Approved      │
+│  ⏳ @jontvoss         Pending       │
+│  ○  @zachafavalava    Not started   │
+│                                     │
+│ [Request Review] [Approve] [Reject] │
+└─────────────────────────────────────┘
+```
+
+#### 6.4 Agent Session Browser
+- **History**: All AI sessions for a ticket
+- **Replay**: See what each agent did
+- **Compare**: Diff between session states
+
+---
+
+### 7. Integration Features
+
+#### 7.1 GitHub Integration
+- **Auto-link**: PRs to tickets via branch naming
+- **Sync status**: PR merged → ticket done
+- **Issue import**: Create ticket from GitHub issue
+- **Commit refs**: `TICKET-042` in commit message links
+
+#### 7.2 Git Integration
+- **Branch suggestions**: `feat/TICKET-042-hero-section`
+- **Commit templates**: Pre-fill with ticket context
+- **Stash per ticket**: Save WIP when switching tickets
+
+#### 7.3 External Tool Sync
+- **Linear/Jira**: Two-way sync for hybrid teams
+- **Slack/Discord**: Notifications and commands
+- **Figma**: Auto-link design files to assets
+
+#### 7.4 CI/CD Hooks
+- **Build status**: Show pipeline status on ticket
+- **Deploy preview**: Link preview URL to ticket
+- **Test results**: Display coverage changes
+
+---
+
+### 8. Analytics & Insights
+
+#### 8.1 Velocity Dashboard
+```
+┌─────────────────────────────────────┐
+│ 📊 THIS WEEK                       │
+├─────────────────────────────────────┤
+│ Tickets completed: 12              │
+│ Avg completion time: 2.3h          │
+│ Agent utilization: 78%             │
+│                                     │
+│ By Service:                         │
+│ ████████░░ Frontend (8)            │
+│ ███░░░░░░░ Backend (3)             │
+│ █░░░░░░░░░ Infra (1)               │
+└─────────────────────────────────────┘
+```
+
+#### 8.2 Agent Performance
+- **Success rate**: Tickets completed without handoff
+- **Avg session length**: Before needing fresh context
+- **Persona effectiveness**: Which rules work best
+
+#### 8.3 Estimation Accuracy
+- **Track**: Estimated vs actual
+- **Trend**: Improving or degrading over time
+- **By type**: Which ticket types are hardest to estimate
+
+#### 8.4 Bottleneck Detection
+- **Review queue time**: How long tickets wait for review
+- **Blocked tickets**: What's causing blocks
+- **Handoff frequency**: Tickets requiring multiple agents
+
+---
+
+### 9. Developer Experience
+
+#### 9.1 Keyboard Shortcuts
+| Shortcut | Action |
+|----------|--------|
+| `Ctrl+Shift+T` | Open ticket panel |
+| `Ctrl+Shift+N` | New ticket |
+| `Ctrl+Shift+L` | Load ticket into chat |
+| `Ctrl+Shift+S` | Search tickets |
+
+#### 9.2 Command Palette Integration
+- All ticket commands in VS Code command palette
+- `Cursor: Create Ticket`
+- `Cursor: Load Ticket`
+- `Cursor: Show My Tickets`
+
+#### 9.3 Editor Decorations
+- **Gutter icons**: Files mentioned in active ticket
+- **Inline hints**: "Part of TICKET-042" on modified lines
+- **Hover cards**: Ticket preview on hover
+
+#### 9.4 Status Bar
+```
+┌─────────────────────────────────────────────────────────┐
+│ ... │ TICKET-042 │ ⏱ 1h 23m │ 3/8 tasks │ @claude │
+└─────────────────────────────────────────────────────────┘
+```
+
+---
+
+### 10. Asset Management
+
+#### 10.1 Asset Browser
+- **Grid view**: Thumbnails with file type icons
+- **List view**: Name, size, date, linked tickets
+- **Preview**: Images, PDFs, Markdown inline
+- **Version comparison**: Side-by-side for v1 vs v1.1
+
+#### 10.2 Asset Upload
+- **Drag-and-drop**: Into panel or chat
+- **Paste from clipboard**: Screenshots
+- **URL import**: Download from Figma, Dropbox, etc.
+- **Auto-organize**: Rename to ticket convention
+
+#### 10.3 Asset Linking
+- **Cross-ticket**: Same asset used in multiple tickets
+- **Smart references**: Update all references if moved
+- **Orphan detection**: Assets not linked to any ticket
+
+---
+
+## Experimental Features (Future)
+
+### 11. Advanced AI Orchestration
+
+#### 11.1 Multi-Agent Pipelines
+```yaml
+pipeline:
+  - agent: claude-architect
+    task: "Design solution"
+    output: Implementation_Plan.md
+    
+  - agent: claude-developer
+    task: "Implement based on plan"
+    depends_on: step_1
+    
+  - agent: gemini-reviewer
+    task: "Security review"
+    depends_on: step_2
+```
+
+#### 11.2 Agent Memory
+- **Cross-session context**: Remember decisions from past tickets
+- **Codebase knowledge**: Pre-loaded understanding of patterns
+- **User preferences**: Learn individual coding styles
+
+#### 11.3 Predictive Assistance
+- **Suggest next ticket**: Based on dependency graph
+- **Pre-generate context**: Load likely-needed files
+- **Anticipate blockers**: "This usually requires X credential"
+
+---
+
+### 12. Enterprise Features
+
+#### 12.1 Team Management
+- **Roles**: Admin, Lead, Developer, Reviewer
+- **Permissions**: Who can create/assign/close tickets
+- **Team views**: Filter to team members only
+
+#### 12.2 Audit Trail
+- **Full history**: Every change logged
+- **Export**: Compliance reports
+- **Retention**: Configurable data retention
+
+#### 12.3 Custom Fields
+- **Add fields**: Priority, Sprint, Epic, etc.
+- **Field types**: Text, Select, Date, User, Tags
+- **Validation rules**: Required, regex, dependencies
+
+---
+
+## Technical Architecture Considerations
+
+### Extension Components
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                    VS Code Extension                     │
+├─────────────────────────────────────────────────────────┤
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐     │
+│  │   Webview   │  │   Commands  │  │  Language   │     │
+│  │   Panel     │  │   Palette   │  │   Server    │     │
+│  └─────────────┘  └─────────────┘  └─────────────┘     │
+│         │                │                │             │
+│         └────────────────┼────────────────┘             │
+│                          │                              │
+│  ┌───────────────────────▼───────────────────────┐     │
+│  │              Ticket Service                    │     │
+│  │  - CRUD operations                            │     │
+│  │  - Search indexing                            │     │
+│  │  - File system watcher                        │     │
+│  └───────────────────────┬───────────────────────┘     │
+│                          │                              │
+│  ┌───────────────────────▼───────────────────────┐     │
+│  │              File System                       │     │
+│  │  .tickets/ and .cursor/ directories           │     │
+│  └───────────────────────────────────────────────┘     │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Data Flow
+
+```
+User Action → Command/Panel → Ticket Service → File System
+                                    ↓
+                              Event Emitter
+                                    ↓
+                    ┌───────────────┼───────────────┐
+                    ↓               ↓               ↓
+               Panel Update    Chat Injection   Status Bar
+```
+
+### File Watching Strategy
+
+- **Debounce**: 300ms to batch rapid changes
+- **Ignore patterns**: `.git`, `node_modules`, build outputs
+- **Partial parse**: Only re-parse changed sections
+- **Index caching**: In-memory search index with TTL
+
+---
+
+## Priority Matrix
+
+| Feature | Impact | Effort | Priority |
+|---------|--------|--------|----------|
+| Chat questionnaire | High | Low | P0 |
+| Sidebar panel (basic) | High | Medium | P0 |
+| Search | High | Low | P0 |
+| Inline commands | High | Low | P0 |
+| **Export Chat as Ticket** | **High** | **Medium** | **P0** |
+| **Auto-Export on Session End** | **High** | **Low** | **P0** |
+| Kanban view | Medium | Medium | P1 |
+| Auto-task breakdown | High | High | P1 |
+| GitHub integration | High | Medium | P1 |
+| Time tracking | Medium | Low | P1 |
+| Scope creep detection | Medium | High | P2 |
+| Multi-agent pipelines | High | Very High | P2 |
+| Analytics dashboard | Medium | Medium | P2 |
+| Team management | Low | High | P3 |
+
+---
+
+## Open Questions
+
+1. **Storage**: Keep file-based or add SQLite for search performance?
+2. **Sync**: Support cloud sync for team collaboration?
+3. **Chat API**: How to inject context into Cursor's chat? (MCP?)
+4. **Licensing**: Open source or commercial extension?
+5. **Cursor-specific**: VS Code compatible or Cursor-only features?
+
+---
+
+*This roadmap is a living document. Prioritize based on user feedback.*
+

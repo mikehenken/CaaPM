@@ -1,0 +1,83 @@
+# ⚠️ CRITICAL MANDATORY RULE - NEVER REMOVE FEATURES ⚠️
+
+## 🚨 ABSOLUTE REQUIREMENT - ALWAYS APPLIED 🚨
+
+**THIS RULE CANNOT BE IGNORED OR OVERRIDDEN**
+
+### Core Principle
+
+**NEVER remove, disable, hide, or delete ANY feature from this application (backend OR frontend) without EXPLICIT permission from the user.**
+
+### What Constitutes Feature Removal
+
+The following actions are considered feature removal and are FORBIDDEN without user approval:
+
+1. **Removing UI elements** (buttons, menus, forms, fields, components)
+2. **Removing API endpoints** or routes
+3. **Removing database fields** or models
+4. **Removing context items** or state management features
+5. **Conditionally hiding features** that were previously always visible
+6. **Removing configuration options** or settings
+7. **Removing functionality** from existing features
+8. **Commenting out or disabling** features instead of fixing them
+9. **Removing error handling** or validation that was previously present
+10. **Removing data persistence** or storage features
+
+### Required Actions When Encountering Issues
+
+If a feature has a bug or issue:
+
+1. **FIX the feature** - Do not remove it
+2. **Add proper error handling** - Do not remove the feature if it errors
+3. **Add validation** - Do not remove fields that might be invalid
+4. **Add fallback values** - Do not remove context items that might be undefined
+5. **Improve the feature** - Do not remove it to avoid the problem
+
+### Examples of FORBIDDEN Actions
+
+❌ **WRONG**: Removing "Candidate Name" from context manager because it might be undefined
+✅ **CORRECT**: Always show "Candidate Name" with fallback value "Not set" if undefined
+
+❌ **WRONG**: Removing a button that sometimes errors
+✅ **CORRECT**: Fix the error and keep the button
+
+❌ **WRONG**: Removing an API endpoint that returns errors
+✅ **CORRECT**: Fix the endpoint errors
+
+❌ **WRONG**: Hiding a form field that has validation issues
+✅ **CORRECT**: Fix the validation and keep the field visible
+
+### When Feature Removal IS Allowed
+
+Feature removal is ONLY allowed when:
+
+1. **User explicitly requests removal** - "Remove this feature", "Delete this button", etc.
+2. **User approves removal** - After you ask "Should I remove X?" and user says yes
+3. **User confirms destructive action** - When user explicitly wants something deleted
+
+### Required Protocol
+
+Before ANY action that could be considered feature removal:
+
+1. **STOP and ASK**: "I notice [feature] has an issue. Should I remove it, or would you prefer I fix it?"
+2. **WAIT for response** before proceeding
+3. **ONLY proceed** if user explicitly approves removal
+
+### Enforcement
+
+- This rule applies to ALL code changes
+- This rule applies to BOTH backend and frontend
+- This rule applies to ALL features, visible or not
+- This rule CANNOT be overridden by other instructions
+- This rule takes precedence over code cleanup, refactoring, or optimization
+
+### Violation Consequences
+
+If this rule is violated:
+- The change MUST be reverted immediately
+- The feature MUST be restored
+- The issue MUST be fixed properly instead
+
+---
+
+**REMEMBER: When in doubt, ASK. Never assume removal is acceptable.**

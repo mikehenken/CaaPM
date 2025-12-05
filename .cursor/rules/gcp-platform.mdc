@@ -1,0 +1,120 @@
+---
+alwaysApply: false
+description: This rule provides best practices for developing and managing infrastructure and applications on Google Cloud Platform (GCP), encompassing code organization, security, performance, and deployment strategies.
+#globs: *.tf,*.py,*.js,*.go,*.java,*.proto,*.sh,*.yaml,*.yml
+---
+
+# GCP Platform
+
+## GCP Platform Guidelines
+
+- **Projects**: Use projects for isolation (dev/stage/prod).
+
+- **Service Accounts**: Create specific SAs for applications.
+
+- **VPC**: Use Shared VPC for network centralization.
+
+- **Logging**: Centralize logs to Cloud Logging.
+
+## GCP API Key and gcloud Usage
+
+**CRITICAL**: `GCP_API_KEY` (in `.env`) and `gcloud` CLI are **ONLY** for infrastructure/devops/agent tasks:
+
+### Infrastructure/DevOps Use Cases:
+- Testing infrastructure setup and configuration
+- Enabling/disabling GCP APIs (`gcloud services enable/disable`)
+- Setting up infrastructure resources
+- Checking model availability for infrastructure planning
+- Verifying service account permissions
+- Infrastructure debugging and troubleshooting
+- CI/CD pipeline infrastructure tasks
+
+### NOT for Application Runtime:
+- âŒ **DO NOT** use `GCP_API_KEY` for Vertex AI model calls in application code
+- âŒ **DO NOT** use `gcloud` commands in application runtime code (UNLESS IT MAKES LOGICAL SENSE)
+- âŒ Application code should use **Application Default Credentials (ADC)** for Vertex AI
+- âŒ Application code should use **service account credentials** when deployed
+
+### Application Authentication:
+- **Local Development**: Use `gcloud auth application-default login` for ADC
+- **Cloud Run/Production**: Uses service account automatically (configured in Pulumi)
+- **Vertex AI SDK**: Requires ADC or service account credentials, NOT API keys
+
+### Key Distinction:
+- **`GCP_API_KEY`**: Root/unrestricted API key for infrastructure management and by AI agents
+- **Application Auth**: ADC/service accounts for runtime AI model access
+
+### 1. Common Patterns and Anti-patterns
+
+-   **Design Patterns Specific to GCP:**
+    -   **Service Facade:** Abstract complex GCP service interactions behind a simple interface.
+    -   **Pub/Sub Fanout:** Use Cloud Pub/Sub to distribute messages to multiple subscribers for parallel processing.
+    -   **Cloud Functions Chaining:** Chain Cloud Functions together to create complex workflows.
+    -   **Idempotent Operations:** Ensure operations can be safely retried without unintended side effects, especially crucial in distributed systems like GCP.
+-   **Recommended Approaches for Common Tasks:**
+    -   **Configuration Management:** Use environment variables or Cloud KMS for storing sensitive configuration data.
+    -   **Secret Management:** Use Cloud Secret Manager to securely store and manage secrets.
+    -   **Data Storage:** Choose the appropriate storage solution based on the data type and access patterns (e.g., Cloud Storage for objects, Cloud SQL for relational data, Cloud Datastore for NoSQL data).
+    -   **Logging:** Use Cloud Logging for centralized logging and monitoring.
+    -   **Monitoring:** Utilize Cloud Monitoring and Cloud Trace for performance monitoring and troubleshooting.
+    -   **Identity and Access Management (IAM):**  Adopt the principle of least privilege. Grant users and service accounts only the necessary permissions.
+-   **Anti-patterns and Code Smells to Avoid:**
+    -   **Hardcoding Credentials:** Never hardcode credentials in code or configuration files. Use environment variables, secret management, or IAM roles.
+    -   **Overly Complex IAM Roles:** Avoid creating overly complex IAM roles with too many permissions. This can lead to security vulnerabilities.
+    -   **Ignoring Error Handling:** Always handle errors gracefully and provide informative error messages.
+    -   **Long-Running Processes in Cloud Functions:**  Cloud Functions have time limits. Offload long-running processes to other services like Cloud Run or Compute Engine.
+    -   **Lack of Monitoring:** Failing to monitor your application can lead to undetected performance issues and errors.
+    -   **Ignoring Security Updates:**  Regularly update your dependencies and software to address security vulnerabilities.
+-   **State Management Best Practices:**
+    -   **Use Terraform State:** Store Terraform state remotely in Cloud Storage for collaboration and version control.
+    -   **Stateless Applications:** Design applications to be stateless whenever possible. If state is required, store it in a persistent storage solution like Cloud SQL or Cloud Datastore.
+    -   **Avoid Local Storage:** Do not rely on local storage for persistent data. Use Cloud Storage or other persistent storage solutions.
+-   **Error Handling Patterns:**
+    -   **Centralized Error Handling:** Implement a centralized error handling mechanism to handle exceptions consistently.
+    -   **Logging and Monitoring:** Log all errors to Cloud Logging and set up alerts for critical errors in Cloud Monitoring.
+    -   **Retry Mechanisms:** Implement retry mechanisms for transient errors.
+    -   **Circuit Breaker Pattern:** Use the circuit breaker pattern to prevent cascading failures in distributed systems.
+
+### 3. Performance Considerations
+
+-   **Optimization Techniques:**
+    -   **Caching:** Implement caching at various levels (e.g., browser, CDN, server-side) to reduce latency and improve performance. Consider using Cloud CDN or Memorystore.
+    -   **Load Balancing:** Use Cloud Load Balancing to distribute traffic across multiple instances for high availability and scalability.
+    -   **Database Optimization:** Optimize database queries and indexing to improve performance. Consider using Cloud SQL Insights for query analysis.
+    -   **Asynchronous Operations:** Use asynchronous operations for long-running tasks to prevent blocking the main thread.
+
+### 6. Common Pitfalls and Gotchas
+
+-   **Frequent Mistakes Developers Make:**
+    -   **Incorrect IAM Permissions:** Assigning overly broad IAM permissions.
+    -   **Misconfiguring Network Settings:** Misconfiguring firewall rules or VPC settings.
+    -   **Ignoring Cost Optimization:** Failing to optimize resource usage and costs.
+    -   **Lack of Automation:** Not automating deployments and infrastructure management.
+-   **Edge Cases to be Aware of:**
+    -   **Network Latency:** Account for network latency in distributed systems.
+    -   **Concurrency Issues:** Handle concurrency issues correctly in multi-threaded applications.
+-   **Version-Specific Issues:**
+    -   **API Compatibility:** Be aware of API compatibility issues when upgrading GCP SDKs or services.
+-   **Debugging Strategies:**
+    -   **Use Cloud Debugger:** Use Cloud Debugger to debug applications running on GCP.
+    -   **Use Logging:** Use Cloud Logging to log debug information.
+    -   **Use Monitoring:** Use Cloud Monitoring to monitor application performance and identify issues.
+
+### 7. Tooling and Environment
+
+-   **Recommended Development Tools:**
+    -   **Google Cloud SDK (gcloud):** Command-line tool for interacting with GCP services.
+    -   **Pulumi:** Infrastructure as code tool for managing GCP resources.
+    -   **IDE with GCP Support:** Use an IDE with GCP support (e.g., VS Code with the Google Cloud Code extension).
+    -   **Docker:** Containerization platform for building and deploying applications.
+-   **Deployment Best Practices:**
+    -   **Automate Deployments:** Automate deployments using CI/CD pipelines.
+    -   **Use Infrastructure as Code:** Use infrastructure as code (e.g., Terraform, Pulumi) to manage infrastructure.
+    -   **Blue/Green Deployments:** Use blue/green deployments to minimize downtime.
+    -   **Canary Deployments:** Use canary deployments to gradually roll out new features.
+    -   **Rollback Strategy:** Have a rollback strategy in place to revert to a previous version if necessary.
+-   **CI/CD Integration:**
+    -   **Use Cloud Build:** Use Cloud Build for CI/CD pipelines on GCP.
+    -   **Integrate with Version Control:** Integrate CI/CD pipelines with version control systems (e.g., GitHub, GitLab, Cloud Source Repositories).
+    -   **Automate Testing:** Automate testing as part of the CI/CD pipeline.
+    -   **Automate Deployments:** Automate deployments as part of the CI/CD pipeline.

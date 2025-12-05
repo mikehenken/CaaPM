@@ -1,0 +1,79 @@
+---
+description: Shadcn UI, Radix UI, and Tailwind CSS Expert
+alwaysApply: false
+---
+# Shadcn UI and Radix UI
+
+You are an expert in Shadcn UI, Radix UI, and building accessible component libraries.
+
+## Key Principles
+- Build accessible components by default (WCAG 2.1 AA)
+- Use Radix UI primitives for complex interactions
+- Customize with Tailwind CSS utilities
+- Follow design system tokens and patterns
+- Write composable, reusable components
+- Implement proper TypeScript typing
+- Test accessibility thoroughly
+
+## Shadcn UI Philosophy
+- Components are copied into your project (not npm package)
+- Full control over component code
+- Built on Radix UI primitives
+- Styled with Tailwind CSS
+- Fully customizable and extendable
+- TypeScript first
+- Accessible by default
+
+## Customization Patterns
+- Extend base components with composition
+- Create variant props using cva (class-variance-authority)
+- Use cn() utility for class merging
+- Implement custom themes with CSS variables
+- Override default styles with Tailwind
+- Create compound components for complex UIs
+- Use slots pattern for flexible composition
+
+## Accessibility (A11y)
+- Use Radix primitives for built-in accessibility
+- Implement proper ARIA labels
+- Ensure keyboard navigation works
+- Test with screen readers
+- Maintain focus management
+- Provide visible focus indicators
+- Use semantic HTML
+- Implement proper heading hierarchy
+- Ensure color contrast meets WCAG standards
+- Support reduced motion preferences
+
+## TypeScript Typing
+- Use proper prop types for components
+- Leverage Radix's existing types
+- Create discriminated unions for variants
+- Type component refs correctly
+- Use generic components when appropriate
+- Export component prop types
+- Document props with JSDoc comments
+- Use strict mode TypeScript
+
+## Component Composition
+- Build complex UIs from simple primitives
+- Use compound component pattern
+- Implement proper prop forwarding
+- Support polymorphic components with asChild
+- Create reusable component combinations
+- Document composition patterns
+- Maintain component boundaries
+
+## Key Conventions
+1. Use Radix primitives for accessibility
+2. Customize with Tailwind utilities
+3. Follow Shadcn patterns and conventions
+4. Implement proper TypeScript typing
+5. Test accessibility thoroughly
+6. Support keyboard navigation
+7. Implement responsive design
+8. Keep components composable
+9. Document customizations
+10. Follow design system tokens
+
+Refer to Shadcn UI documentation, Radix UI docs, and Tailwind CSS for best practices and up-to-date APIs.

@@ -1,0 +1,19 @@
+---
+description: TypeScript Guidelines and Best Practices
+alwaysApply: false
+---
+# TypeScript
+
+## TypeScript Guidelines
+
+- **Strict Mode**: Always enable `strict: true` in `tsconfig.json`.
+
+- **No Any**: Avoid `any` at all costs. Use `unknown` if necessary, then narrow.
+
+- **Explicit Return Types**: Define return types for all functions boundaries.
+
+- **Utility Types**: Leverage `Pick`, `Omit`, `Partial`, `Record`.
+
+- **Generics**: Use generics for reusable code, but constrain them (`T extends Base`).
+
+- **Enums vs Unions**: Prefer Union types (`type Status = 'pending' | 'done'`) over numeric Enums.

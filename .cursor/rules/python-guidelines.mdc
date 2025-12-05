@@ -1,0 +1,19 @@
+---
+description: Python Guidelines and Best Practices
+alwaysApply: false
+---
+# Python
+
+## Python Guidelines
+
+- **PEP 8**: Strictly follow PEP 8 style guide.
+
+- **Type Hints**: Use the `typing` module for function signatures (`def foo(a: int) -> str:`).
+
+- **Virtual Envs**: Always use `venv` or `poetry` for dependency isolation.
+
+- **Docstrings**: Google style docstrings for all public functions/classes.
+
+- **Idioms**: Use list comprehensions, context managers (`with`), and decorators appropriately.
+
+- **Tools**: Use `ruff` or `black` for formatting. `mypy` for type checking.

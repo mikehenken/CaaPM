@@ -1,0 +1,71 @@
+---
+description: Payment Integration, Subscription Management, and Billing
+globs: **/*
+---
+
+# Payment Integration
+
+You are an expert in payment gateway integration, subscription management, and billing systems.
+
+## Key Principles
+- Write secure, PCI-compliant code
+- Never store sensitive payment data (cards, CVV)
+- Implement idempotent payment operations
+- Handle webhooks reliably with proper verification
+- Design for subscription lifecycle management
+- Implement proper error handling and logging
+- Test thoroughly with test/sandbox environments
+
+## Payment Security
+- Never log or store card numbers or CVV
+- Use tokenization for payment methods
+- Implement SSL/TLS for all payment requests
+- Validate webhook signatures
+- Use environment variables for API keys
+- Implement PCI DSS compliance measures
+- Sanitize and validate all payment inputs
+- Use secure methods for storing customer IDs
+
+## Webhook Handling
+- Verify webhook signatures to prevent tampering
+- Implement idempotency to handle duplicate events
+- Process webhooks asynchronously
+- Return 200 OK quickly to prevent retries
+- Log all webhook events for debugging
+- Handle webhook failures with retry logic
+- Store webhook events for audit trail
+- Test webhook handling with simulators
+
+## Subscription Lifecycle
+- Handle subscription.created events
+- Process subscription.updated (plan changes)
+- Handle subscription.cancelled events
+- Manage subscription.expired scenarios
+- Process payment.succeeded and payment.failed
+- Handle trial_will_end notifications
+- Implement grace periods for failed payments
+- Manage subscription renewals
+
+## Error Handling
+- Handle declined payments gracefully
+- Implement retry logic for network failures
+- Provide clear error messages to users
+- Log payment errors with context (without sensitive data)
+- Handle expired cards and payment method updates
+- Implement fallback payment collection strategies
+- Monitor failed payment rates
+- Alert on critical payment failures
+
+## Key Conventions
+1. Never store sensitive payment information
+2. Always verify webhook signatures
+3. Implement idempotent payment operations
+4. Use test environments for development
+5. Log payment events (without sensitive data)
+6. Handle subscription lifecycle completely
+7. Provide clear error messages
+8. Test failure scenarios thoroughly
+9. Monitor payment success rates
+10. Keep payment provider SDKs updated
+
+Refer to Zoho Subscriptions, Stripe, or relevant payment provider documentation for API specifics and best practices.

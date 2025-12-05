@@ -1,0 +1,119 @@
+---
+description: AI/LLM Integration and Prompt Engineering
+globs: **/*.ts, **/*.js, **/*.py
+---
+
+# AI/LLM Integration
+
+You are an expert in AI/LLM integration, prompt engineering, and building AI-powered applications.
+
+## Key Principles
+- Write concise, type-safe code for AI service integration
+- Design robust error handling for AI API failures
+- Implement proper rate limiting and quota management
+- Optimize prompts for cost and quality
+- Handle streaming responses efficiently
+- Validate and sanitize AI outputs
+
+## Google Gemini API
+- Use @google/generative-ai SDK for Node.js/TypeScript
+- Implement proper API key management with environment variables
+- Use appropriate model selection (gemini-pro, gemini-pro-vision)
+- Handle safety settings and content filtering
+- Implement streaming for long-form content generation
+- Use system instructions effectively
+- Handle context window limits (32k tokens for gemini-pro)
+- Implement token counting for cost estimation
+
+## Prompt Engineering
+- Write clear, specific, and structured prompts
+- Use few-shot examples when appropriate
+- Implement prompt templates with variable substitution
+- Break complex tasks into smaller, focused prompts
+- Use system messages to set context and behavior
+- Implement chain-of-thought prompting for complex reasoning
+- Test prompts iteratively and measure quality
+- Version control your prompts
+
+## Error Handling
+- Implement retry logic with exponential backoff
+- Handle rate limit errors (429) gracefully
+- Catch and log API errors with context
+- Implement fallback strategies for API failures
+- Validate API responses before using
+- Handle timeout errors appropriately
+- Provide user-friendly error messages
+- Monitor error rates and patterns
+
+## Response Processing
+- Parse and validate JSON responses when using structured output
+- Sanitize AI-generated content before display
+- Implement content moderation checks
+- Handle partial responses and streaming
+- Extract structured data reliably
+- Implement response caching when appropriate
+- Track token usage for cost optimization
+
+## Conversation Management
+- Maintain conversation history efficiently
+- Implement context window management
+- Summarize long conversations to fit context limits
+- Store conversation state in database
+- Implement conversation branching when needed
+- Clean up old conversation data
+
+## Performance Optimization
+- Cache frequent AI requests when possible
+- Implement request batching where appropriate
+- Use streaming to improve perceived performance
+- Optimize prompts to reduce token usage
+- Implement background processing for long tasks
+- Use appropriate timeouts (30-60 seconds)
+- Monitor API latency and costs
+
+## Security and Privacy
+- Never log or store API keys in code
+- Sanitize user inputs before sending to AI
+- Implement content filtering for inappropriate content
+- Handle PII (Personally Identifiable Information) carefully
+- Implement rate limiting per user
+- Audit AI interactions for compliance
+- Be transparent about AI usage with users
+
+## Cost Management
+- Track token usage per request and per user
+- Implement usage quotas and limits
+- Use cheaper models when appropriate
+- Cache results to avoid duplicate requests
+- Monitor spending and set budget alerts
+- Optimize prompts for token efficiency
+- Implement tiered usage based on subscription
+
+## Integration Patterns
+- Use dependency injection for AI clients
+- Implement service layer abstraction
+- Create reusable prompt templates
+- Build typed interfaces for AI responses
+- Implement request/response logging
+- Use background jobs for long-running tasks
+- Implement webhooks for async processing
+
+## Testing Strategies
+- Mock AI responses for unit tests
+- Create test fixtures for common scenarios
+- Implement integration tests with real API (sparingly)
+- Test error handling thoroughly
+- Validate prompt templates
+- Test streaming functionality
+- Monitor response quality over time
+
+## Key Conventions
+1. Always validate and sanitize AI outputs
+2. Implement proper error handling and retries
+3. Track usage and costs continuously
+4. Use streaming for better user experience
+5. Version and test prompts systematically
+6. Handle rate limits gracefully
+7. Protect user privacy and data
+
+Refer to Google Gemini API documentation and OpenAI API best practices for up-to-date guidelines.

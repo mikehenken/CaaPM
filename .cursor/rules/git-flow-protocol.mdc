@@ -1,0 +1,460 @@
+---
+description: Git Flow and Branch Management Protocol
+globs: **/*
+---
+
+# Git Flow Protocol
+
+## Overview
+This project uses a **modified Git Flow** optimized for extension development with CI/CD automation.
+
+## Branch Structure
+
+### Main Branches (Protected)
+
+#### `main`
+- **Purpose:** Production-ready code
+- **Protection:** 
+  - Requires PR approval
+  - All CI checks must pass
+  - No direct commits
+- **Merges from:** `release/*`, `hotfix/*`
+- **Tagged:** Every merge creates a version tag
+
+#### `develop`
+- **Purpose:** Integration branch for features
+- **Protection:**
+  - Requires CI checks to pass
+  - Direct commits allowed for minor fixes
+- **Merges from:** `feature/*`, `bugfix/*`
+- **Deploy:** Optional preview builds
+
+### Supporting Branches
+
+#### Feature Branches: `feature/{ticket-id}-{short-description}`
+**Purpose:** New features or enhancements
+
+**Naming:**
+```bash
+feature/TICKET-001-kanban-view
+feature/TICKET-042-export-pdf
+feature/add-dark-mode  # Without ticket
+```
+
+**Workflow:**
+```bash
+# Create from develop
+git checkout develop
+git pull origin develop
+git checkout -b feature/TICKET-001-kanban-view
+
+# Work on feature
+git add .
+git commit -m "feat(kanban): add drag-drop functionality"
+
+# Push and create PR
+git push origin feature/TICKET-001-kanban-view
+gh pr create --base develop --title "feat: Kanban board view" --body "Closes #1"
+```
+
+**Rules:**
+- Branch from: `develop`
+- Merge to: `develop`
+- Delete after merge: Yes
+- Lifetime: Max 2 weeks
+
+#### Bugfix Branches: `bugfix/{ticket-id}-{short-description}`
+**Purpose:** Non-critical bug fixes
+
+**Naming:**
+```bash
+bugfix/TICKET-045-search-crash
+bugfix/fix-modal-close
+```
+
+**Workflow:**
+```bash
+git checkout develop
+git checkout -b bugfix/TICKET-045-search-crash
+# Fix bug
+git commit -m "fix(search): handle empty query gracefully"
+git push origin bugfix/TICKET-045-search-crash
+```
+
+**Rules:**
+- Branch from: `develop`
+- Merge to: `develop`
+- Delete after merge: Yes
+
+#### Release Branches: `release/v{version}`
+**Purpose:** Prepare for production release
+
+**Naming:**
+```bash
+release/v1.2.0
+release/v2.0.0-rc.1
+```
+
+**Workflow:**
+```bash
+# Create release branch
+git checkout develop
+git checkout -b release/v1.2.0
+
+# Update version
+npm version minor  # 1.1.0 → 1.2.0
+
+# Update CHANGELOG.md
+# Run final tests
+npm run test
+npm run compile
+
+# Merge to main
+git checkout main
+git merge --no-ff release/v1.2.0 -m "chore: release v1.2.0"
+git tag -a v1.2.0 -m "Release v1.2.0"
+git push origin main --tags
+
+# Merge back to develop
+git checkout develop
+git merge --no-ff release/v1.2.0
+git push origin develop
+
+# Delete release branch
+git branch -d release/v1.2.0
+```
+
+**Rules:**
+- Branch from: `develop`
+- Merge to: `main` AND `develop`
+- Only version bumps and bug fixes allowed
+- No new features
+- Delete after merge: Yes
+
+#### Hotfix Branches: `hotfix/v{version}`
+**Purpose:** Critical production bug fixes
+
+**Naming:**
+```bash
+hotfix/v1.2.1
+hotfix/v1.2.2-security
+```
+
+**Workflow:**
+```bash
+# Create from main (production)
+git checkout main
+git checkout -b hotfix/v1.2.1
+
+# Fix critical bug
+git commit -m "fix: critical auth bypass vulnerability"
+
+# Bump PATCH version
+npm version patch  # 1.2.0 → 1.2.1
+
+# Merge to main
+git checkout main
+git merge --no-ff hotfix/v1.2.1
+git tag -a v1.2.1 -m "Hotfix v1.2.1"
+git push origin main --tags
+
+# Merge to develop
+git checkout develop
+git merge --no-ff hotfix/v1.2.1
+git push origin develop
+
+# Delete hotfix branch
+git branch -d hotfix/v1.2.1
+```
+
+**Rules:**
+- Branch from: `main`
+- Merge to: `main` AND `develop`
+- Only critical fixes
+- Immediate release after merge
+- Delete after merge: Yes
+
+## Commit Message Convention
+
+### Format (Conventional Commits)
+```
+<type>(<scope>): <subject>
+
+[optional body]
+
+[optional footer]
+```
+
+### Types
+
+| Type | Description | Version Impact | Example |
+|------|-------------|----------------|---------|
+| `feat` | New feature | MINOR | `feat(ui): add kanban board` |
+| `fix` | Bug fix | PATCH | `fix(parser): handle null values` |
+| `docs` | Documentation | None | `docs: update README` |
+| `style` | Code style (formatting) | None | `style: fix indentation` |
+| `refactor` | Code refactoring | None | `refactor: extract ticket service` |
+| `perf` | Performance improvement | PATCH | `perf: optimize search indexing` |
+| `test` | Add/update tests | None | `test: add unit tests for parser` |
+| `chore` | Maintenance tasks | None | `chore: update dependencies` |
+| `ci` | CI/CD changes | None | `ci: add GitHub Actions workflow` |
+| `build` | Build system changes | None | `build: update esbuild config` |
+
+### Breaking Changes
+```bash
+git commit -m "feat!: redesign ticket storage
+
+BREAKING CHANGE: Ticket schema changed from flat to nested structure.
+Migration script required."
+```
+
+### Scopes (Optional)
+- `ui` - User interface
+- `api` - API changes
+- `parser` - Parsing logic
+- `storage` - File system operations
+- `service` - Service layer
+- `webview` - Webview panel
+
+### Examples
+
+**Good Commits:**
+```bash
+feat(kanban): add drag-and-drop for ticket status
+fix(search): escape special characters in query
+docs: add installation instructions
+perf(parser): cache parsed ticket metadata
+test(service): add integration tests for TicketService
+```
+
+**Bad Commits:**
+```bash
+updated stuff           # Too vague
+Fixed bug              # Not following convention
+WIP                    # Work in progress should be rebased
+Quick fix              # Not descriptive
+```
+
+## Pull Request Protocol
+
+### PR Title Format
+Follow commit convention:
+```
+feat(kanban): Add drag-and-drop functionality
+fix(search): Handle empty query gracefully
+```
+
+### PR Description Template
+```markdown
+## Description
+Brief description of changes
+
+## Type of Change
+- [ ] Bug fix (non-breaking change which fixes an issue)
+- [ ] New feature (non-breaking change which adds functionality)
+- [ ] Breaking change (fix or feature that would cause existing functionality to not work as expected)
+
+## Related Ticket
+Closes #TICKET-XXX
+
+## Testing
+- [ ] Unit tests pass
+- [ ] Integration tests pass
+- [ ] Manual testing completed
+
+## Checklist
+- [ ] Code follows style guidelines
+- [ ] Self-review completed
+- [ ] Comments added for complex code
+- [ ] Documentation updated
+- [ ] No new warnings generated
+```
+
+### PR Approval Requirements
+
+| Target Branch | Approvals Required | CI Status |
+|---------------|-------------------|-----------|
+| `develop` | 1 (optional for self) | ✅ Must pass |
+| `main` | 1 (required) | ✅ Must pass |
+
+### PR Review Checklist
+- [ ] Code quality and readability
+- [ ] Test coverage adequate
+- [ ] No security vulnerabilities
+- [ ] Performance implications considered
+- [ ] Documentation updated
+- [ ] Breaking changes documented
+
+## Merge Strategies
+
+### Feature → Develop
+**Strategy:** Squash and Merge
+```bash
+# Squashes all commits into one
+git merge --squash feature/TICKET-001-kanban-view
+```
+
+**Result:**
+```
+* feat(kanban): add drag-and-drop functionality
+```
+
+### Release/Hotfix → Main
+**Strategy:** Merge Commit (No Fast-Forward)
+```bash
+git merge --no-ff release/v1.2.0
+```
+
+**Result:**
+```
+*   Merge branch 'release/v1.2.0'
+|\
+| * chore: bump version to 1.2.0
+| * fix: last-minute bug
+```
+
+## Branch Protection Rules
+
+### `main` Branch
+- ✅ Require pull request reviews (1)
+- ✅ Require status checks to pass
+  - ✅ Build
+  - ✅ Test
+  - ✅ Lint
+- ✅ Require branches to be up to date
+- ✅ Require linear history (No merge commits via PR)
+- ✅ Do not allow bypassing the above settings
+- ✅ Restrict force pushes
+
+### `develop` Branch
+- ✅ Require status checks to pass
+  - ✅ Build
+  - ✅ Lint
+- ❌ Allow force pushes (with lease)
+- ✅ Restrict who can push
+
+## Tag Management
+
+### Tag Format
+```
+v{MAJOR}.{MINOR}.{PATCH}[-{PRERELEASE}]
+```
+
+### Tag Examples
+```bash
+v1.0.0           # Stable release
+v1.1.0-beta.1    # Beta pre-release
+v1.1.0-rc.2      # Release candidate
+v2.0.0           # Major version
+```
+
+### Creating Tags
+```bash
+# Annotated tag (preferred)
+git tag -a v1.2.0 -m "Release version 1.2.0"
+
+# Lightweight tag (not recommended)
+git tag v1.2.0
+
+# Push tags
+git push origin v1.2.0
+git push origin --tags  # Push all tags
+```
+
+### Tag Protection
+- ✅ Protect tags matching `v*`
+- ✅ Only maintainers can create tags
+
+## Workflow Diagram
+
+```
+develop ─┬─ feature/TICKET-001 ─┐
+         │                       ├─→ develop
+         ├─ bugfix/TICKET-002 ──┘
+         │
+         └─ release/v1.2.0 ─┬─→ main (tag v1.2.0)
+                             └─→ develop
+
+main ──── hotfix/v1.2.1 ─┬─→ main (tag v1.2.1)
+                          └─→ develop
+```
+
+## Common Workflows
+
+### Starting a New Feature
+```bash
+git checkout develop
+git pull origin develop
+git checkout -b feature/TICKET-XXX-description
+# Work...
+git push origin feature/TICKET-XXX-description
+gh pr create --base develop
+```
+
+### Preparing a Release
+```bash
+git checkout develop
+git pull origin develop
+git checkout -b release/v1.2.0
+npm version minor
+npm run compile
+npm run test
+git push origin release/v1.2.0
+gh pr create --base main --title "chore: release v1.2.0"
+```
+
+### Emergency Hotfix
+```bash
+git checkout main
+git pull origin main
+git checkout -b hotfix/v1.2.1
+# Fix critical bug
+git commit -m "fix: critical security issue"
+npm version patch
+git push origin hotfix/v1.2.1
+gh pr create --base main --title "fix: critical security patch v1.2.1" --label "hotfix"
+```
+
+## Best Practices
+
+### DO
+✅ Keep branches focused and short-lived
+✅ Write descriptive commit messages
+✅ Rebase feature branches before merging
+✅ Delete merged branches
+✅ Tag all releases
+✅ Update CHANGELOG.md for releases
+
+### DON'T
+❌ Commit directly to `main`
+❌ Force push to protected branches
+❌ Merge without CI passing
+❌ Leave stale branches
+❌ Use vague commit messages
+❌ Skip PR reviews
+
+## Automation
+
+### GitHub Actions Triggers
+
+**On Push to `develop`:**
+- Run tests
+- Build extension
+- Deploy preview build
+
+**On PR to `main`:**
+- Run full test suite
+- Build extension
+- Create draft release
+
+**On Tag `v*`:**
+- Build extension
+- Run tests
+- Create GitHub Release
+- Upload .vsix artifact
+- (Optional) Publish to VS Code Marketplace
+
+## References
+- [Git Flow](https://nvie.com/posts/a-successful-git-branching-model/)
+- [Conventional Commits](https://www.conventionalcommits.org/)
+- [GitHub Flow](https://guides.github.com/introduction/flow/)

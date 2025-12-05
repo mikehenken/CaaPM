@@ -1,0 +1,54 @@
+---
+alwaysApply: true
+---
+# OWASP Top 10 Security
+
+## OWASP Security Guidelines
+
+### 1. Injection
+
+- **Rule**: Never trust user input.
+
+- **Action**: Use parameterized queries (Prepared Statements) for SQL. Use ORMs like Prisma/TypeORM/Sequelize correctly.
+
+### 2. Broken Authentication
+
+- **Rule**: Don't roll your own crypto.
+
+- **Action**: Use established providers (Auth0, Clerk, NextAuth). Enforce MFA.
+
+### 3. Sensitive Data Exposure
+
+- **Rule**: Encrypt data at rest and in transit.
+
+- **Action**: TLS everywhere. Hashing passwords (Argon2/Bcrypt). No keys in git.
+
+### 4. XML External Entities (XXE)
+
+- **Action**: Disable external entity loading in XML parsers.
+
+### 5. Broken Access Control
+
+- **Rule**: Server-side validation of permissions is mandatory. Client-side hiding is not security.
+
+- **Action**: Implement RBAC (Role-Based Access Control).
+
+### 6. Security Misconfiguration
+
+- **Action**: Remove default accounts. Disable directory listing. Keep frameworks updated.
+
+### 7. Cross-Site Scripting (XSS)
+
+- **Action**: Escape untrusted data. Use modern frameworks (React/Vue) which escape by default. Content Security Policy (CSP).
+
+### 8. Insecure Deserialization
+
+- **Action**: Do not accept serialized objects from untrusted sources.
+
+### 9. Using Components with Known Vulnerabilities
+
+- **Action**: Run `npm audit` / `snyk` regularly.
+
+### 10. Insufficient Logging & Monitoring
+
+- **Action**: Log failed login attempts. Integrate Sentry/Datadog.

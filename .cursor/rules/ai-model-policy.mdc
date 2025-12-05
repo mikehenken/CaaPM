@@ -1,0 +1,10 @@
+# AI Model Policy
+
+## MANDATORY Model Selection
+
+- **ALWAYS** use **Gemini 3 Pro** (or the latest available version of Gemini 3) as the foundational model for ALL AI tasks, agents, and generation.
+- **NEVER** use Gemini 1.5 Pro or Flash unless explicitly instructed for a legacy reason.
+- This applies to:
+  - Fine-tuning base models
+  - Teacher models for synthetic data generation
+  - Runtime chat agents

@@ -1,0 +1,8 @@
+---
+description: Deprecated - see engineering-standards.mdc
+alwaysApply: false
+---
+
+# Deprecated
+
+This file has been merged into `.cursor/rules/engineering-standards.mdc`.

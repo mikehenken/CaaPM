@@ -1,0 +1,11 @@
+---
+description: Workflow for Drizzle database migrations
+globs: **/*
+---
+
+# Database Migration Workflow
+
+1. Run `npm run db:generate` to generate the SQL migration file based on schema changes.
+2. Ask the user to review the generated SQL file in `src/db/migrations`.
+3. If approved, run `npm run db:migrate` to apply the changes to the local SQLite database.
+4. Run `npm run db:studio` (in the background or suggest it) to let the user inspect the DB.
