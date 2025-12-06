@@ -402,3 +402,6 @@ Built for **Cursor** IDE and AI-assisted development workflows.
 
 **Made with ❤️ for developers using AI agents**
 
+
+
+

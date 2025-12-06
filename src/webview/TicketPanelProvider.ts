@@ -122,8 +122,9 @@ export class TicketPanelProvider implements vscode.WebviewViewProvider {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     private _getHtmlForWebview(_webview: vscode.Webview) {
         // _webview can be used for CSP if needed in future
-        const stylePath = vscode.Uri.joinPath(this._extensionUri, 'src', 'webview', 'style.css');
-        const scriptPath = vscode.Uri.joinPath(this._extensionUri, 'src', 'webview', 'main.js');
+        // Use 'dist' instead of 'src' because esbuild copies webview assets there
+        const stylePath = vscode.Uri.joinPath(this._extensionUri, 'dist', 'webview', 'style.css');
+        const scriptPath = vscode.Uri.joinPath(this._extensionUri, 'dist', 'webview', 'main.js');
 
         const styleContent = fs.readFileSync(stylePath.fsPath, 'utf8');
         const scriptContent = fs.readFileSync(scriptPath.fsPath, 'utf8');

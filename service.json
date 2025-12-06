@@ -1,0 +1,88 @@
+{
+  "name": "cursor-agent-pm",
+  "version": "0.0.1",
+  "description": "In-IDE Project Management Extension for Cursor Agents",
+  "purpose": "To bridge the gap between chat-based development and structured project management by treating tickets as code artifacts.",
+  "architecture": {
+    "frontend": "VS Code Webview (Vanilla JS + CSS)",
+    "backend": "TypeScript Service Layer (TicketService.ts)",
+    "storage": "File-based (.tickets/ directory with Markdown files)",
+    "communication": "Message Passing (Webview <-> Extension Host)"
+  },
+  "features": {
+    "core": [
+      {
+        "name": "Ticket Dashboard",
+        "status": "implemented",
+        "details": "View active and upcoming tickets"
+      },
+      {
+        "name": "Kanban Board",
+        "status": "partial",
+        "details": "Basic drag-and-drop. Missing swimlanes, responsiveness, and rich card details."
+      },
+      {
+        "name": "Ticket Creation",
+        "status": "implemented",
+        "details": "Create via command or clipboard (structured text parsing)"
+      },
+      {
+        "name": "Context Management",
+        "status": "partial",
+        "details": "Manual copy of ticket context. Missing auto-injection and chat binding."
+      }
+    ],
+    "chat_integration": [
+      {
+        "name": "Questionnaire Wizard",
+        "status": "missing",
+        "details": "Interactive chat flow to create tickets"
+      },
+      {
+        "name": "Inline Commands",
+        "status": "missing",
+        "details": "/ticket, /export, etc."
+      },
+      {
+        "name": "Auto-Export",
+        "status": "missing",
+        "details": "Convert chat sessions to tickets automatically"
+      }
+    ],
+    "advanced": [
+      {
+        "name": "Search",
+        "status": "buggy",
+        "details": "Implemented but loses focus on type."
+      },
+      {
+        "name": "Workflow Automation",
+        "status": "missing"
+      },
+      {
+        "name": "Analytics",
+        "status": "missing"
+      }
+    ]
+  },
+  "data_model": {
+    "ticket": {
+      "id": "string (TICKET-XXX)",
+      "title": "string",
+      "metadata": {
+        "status": "ready | in_progress | review | done",
+        "complexity": "simple | task_list | plan",
+        "services": "string[]",
+        "owner": "string",
+        "estimate": "string"
+      },
+      "files": [
+        "Request.md",
+        "TaskList.md",
+        "Implementation_Plan.md",
+        "Discussion.md"
+      ]
+    }
+  }
+}
+

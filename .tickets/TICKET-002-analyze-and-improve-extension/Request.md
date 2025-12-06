@@ -1,7 +1,7 @@
 # [TICKET-002] Analyze Extension PRD & Improve Features
 
 ## Metadata
-- **Status**: ready
+- **Status**: in_progress
 - **Complexity**: plan
 - **Service(s)**: extension
 - **Created**: 2024-12-05

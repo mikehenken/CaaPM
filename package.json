@@ -14,7 +14,9 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
   "main": "./dist/extension.js",
   "contributes": {
     "viewsContainers": {
@@ -42,12 +44,32 @@
       },
       {
         "command": "cursor-agent-pm.createTicket",
-        "title": "Create Ticket",
+        "title": "Create Ticket (Smart)",
+        "category": "Ticket"
+      },
+      {
+        "command": "cursor-agent-pm.createTicketWizard",
+        "title": "Create Ticket (Wizard)",
+        "category": "Ticket"
+      },
+      {
+        "command": "cursor-agent-pm.exportFromClipboard",
+        "title": "Export Chat as Ticket",
+        "category": "Ticket"
+      },
+      {
+        "command": "cursor-agent-pm.loadTicket",
+        "title": "Load Ticket Context",
+        "category": "Ticket"
+      },
+      {
+        "command": "cursor-agent-pm.ticketStatus",
+        "title": "Ticket Status",
         "category": "Ticket"
       },
       {
         "command": "cursor-agent-pm.createTicketFromClipboard",
-        "title": "Create Ticket from Clipboard",
+        "title": "Create Ticket from Clipboard (Legacy)",
         "category": "Ticket"
       },
       {

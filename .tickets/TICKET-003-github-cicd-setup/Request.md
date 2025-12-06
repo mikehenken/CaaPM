@@ -1,7 +1,7 @@
 # [TICKET-003] GitHub Repository & CI/CD Pipeline Setup
 
 ## Metadata
-- **Status**: done
+- **Status**: in_progress
 - **Complexity**: plan
 - **Service(s)**: infra, extension
 - **Created**: 2024-12-05

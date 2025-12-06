@@ -1,7 +1,24 @@
 const esbuild = require("esbuild");
+const fs = require('fs');
+const path = require('path');
 
 const production = process.argv.includes('--production');
 const watch = process.argv.includes('--watch');
+
+function copyWebviewFiles() {
+    const srcDir = path.join(__dirname, 'src', 'webview');
+    const destDir = path.join(__dirname, 'dist', 'webview');
+
+    if (!fs.existsSync(destDir)) {
+        fs.mkdirSync(destDir, { recursive: true });
+    }
+
+    const files = ['style.css', 'main.js'];
+    files.forEach(file => {
+        fs.copyFileSync(path.join(srcDir, file), path.join(destDir, file));
+    });
+    console.log('[build] copied webview files');
+}
 
 /**
  * @type {import('esbuild').Plugin}
@@ -19,6 +36,7 @@ const esbuildProblemMatcherPlugin = {
 				console.error(`    ${location.file}:${location.line}:${location.column}:`);
 			});
 			console.log('[watch] build finished');
+            copyWebviewFiles();
 		});
 	},
 };

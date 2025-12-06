@@ -5,7 +5,8 @@ let currentState = {
     activeTicketId: null,
     tickets: [],
     activeTab: 'Request.md',
-    ticketContent: {}
+    ticketContent: {},
+    searchQuery: ''
 };
 
 window.addEventListener('message', event => {
@@ -57,6 +58,7 @@ function updateStatus(ticketId, status) {
 
 function onSearch(e) {
     const query = e.target.value;
+    currentState.searchQuery = query;
     vscode.postMessage({ type: 'search', query });
 }
 
@@ -68,12 +70,26 @@ function showContextMenu(e, ticketId) {
 function render() {
     const app = document.getElementById('app');
     
+    // Save focus state before render
+    const searchInput = document.querySelector('.search-bar input');
+    const wasSearchFocused = searchInput && document.activeElement === searchInput;
+    const cursorPosition = searchInput ? searchInput.selectionStart : 0;
+    
     if (currentState.view === 'detail') {
         renderDetail(app);
     } else if (currentState.view === 'kanban') {
         renderKanban(app);
     } else {
         renderDashboard(app);
+    }
+
+    // Restore focus and cursor position after render
+    if (wasSearchFocused) {
+        const newSearchInput = document.querySelector('.search-bar input');
+        if (newSearchInput) {
+            newSearchInput.focus();
+            newSearchInput.setSelectionRange(cursorPosition, cursorPosition);
+        }
     }
 }
 

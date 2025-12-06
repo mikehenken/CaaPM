@@ -7,9 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.2] - 2024-12-06
+
 ### Added
-- Initial release preparation
-- GitHub repository and CI/CD setup
+- **Launch Configuration**: Added `.vscode/launch.json` for proper debugging with workspace auto-open
+- **Activation Event**: Extension now activates on startup (`onStartupFinished`) for immediate availability
+- **Ticket Wizard**: New step-by-step ticket creation wizard (`createTicketWizard`)
+- **Load Ticket Context**: New command to load ticket context directly into chat
+- **Service Configuration**: Added `service.json` for service definitions
+- **VS Code Ignore**: Added `.vscodeignore` for cleaner packaging
+- **Feature Screenshots**: Added panel screenshots for documentation
+
+### Fixed
+- Extension not loading when no workspace folder was open (now shows proper warning)
+- Missing command registrations in extension activation
+
+### Changed
+- Improved clipboard parsing for ticket creation
+- Enhanced ticket service with better metadata handling
+- Updated README with feature screenshots
 
 ## [0.0.1] - 2024-12-05
 
@@ -52,6 +68,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ESLint and TypeScript strict mode
 - No external dependencies for ticket storage
 
-[Unreleased]: https://github.com/mikehenken/CaaPM/compare/v0.0.1...HEAD
+[Unreleased]: https://github.com/mikehenken/CaaPM/compare/v0.0.2...HEAD
+[0.0.2]: https://github.com/mikehenken/CaaPM/compare/v0.0.1...v0.0.2
 [0.0.1]: https://github.com/mikehenken/CaaPM/releases/tag/v0.0.1
 

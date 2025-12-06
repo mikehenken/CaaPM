@@ -28,5 +28,8 @@ export interface CreateTicketParams {
     estimate?: string;
     owner?: string;
     description: string;
+    plan?: string;
+    tasks?: string;
+    discussion?: string;
 }
 

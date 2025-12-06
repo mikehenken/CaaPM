@@ -62,9 +62,24 @@ function parseClipboardContent(text: string): CreateTicketParams {
         params.title = firstLine.substring(0, 50) + (firstLine.length > 50 ? '...' : '');
     }
 
-    const requestMatch = text.match(/Request:([\s\S]*?)(?=(?:Complexity:|Service:|Owner:|Estimate:|$))/i);
+    const requestMatch = text.match(/(?:Request|Description):([\s\S]*?)(?=(?:Complexity:|Service:|Owner:|Estimate:|Plan:|Tasks:|Discussion:|$))/i);
     if (requestMatch) {
         params.description = requestMatch[1].trim();
+    }
+
+    const planMatch = text.match(/(?:Plan|Implementation Plan):([\s\S]*?)(?=(?:Request:|Complexity:|Service:|Owner:|Estimate:|Tasks:|Discussion:|$))/i);
+    if (planMatch) {
+        params.plan = planMatch[1].trim();
+    }
+
+    const tasksMatch = text.match(/(?:Tasks|Task List):([\s\S]*?)(?=(?:Request:|Complexity:|Service:|Owner:|Estimate:|Plan:|Discussion:|$))/i);
+    if (tasksMatch) {
+        params.tasks = tasksMatch[1].trim();
+    }
+
+    const discussionMatch = text.match(/(?:Discussion|Notes):([\s\S]*?)(?=(?:Request:|Complexity:|Service:|Owner:|Estimate:|Plan:|Tasks:|$))/i);
+    if (discussionMatch) {
+        params.discussion = discussionMatch[1].trim();
     }
 
     const complexityMatch = text.match(/Complexity:\s*(simple|task_list|plan)/i);

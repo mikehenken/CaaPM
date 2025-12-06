@@ -1,7 +1,7 @@
 # [TICKET-001] In-IDE Agent Project Management Extension
 
 ## Metadata
-- **Status**: done
+- **Status**: ready
 - **Complexity**: plan
 - **Service(s)**: extension
 - **Created**: 2024-12-05

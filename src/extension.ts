@@ -2,8 +2,10 @@ import * as vscode from 'vscode';
 import { TicketService } from './services/TicketService';
 import { TicketPanelProvider } from './webview/TicketPanelProvider';
 import { createTicketCommand } from './commands/createTicket';
+import { createTicketWizardCommand } from './commands/createTicketWizard';
 import { createTicketFromClipboardCommand } from './commands/createTicketFromClipboard';
 import { copyTicketContextCommand } from './commands/copyTicketContext';
+import { loadTicketContextCommand } from './commands/loadTicketContext';
 import { TicketStatusBar } from './statusbar/TicketStatusBar';
 
 export async function activate(context: vscode.ExtensionContext) {
@@ -41,6 +43,14 @@ export async function activate(context: vscode.ExtensionContext) {
         })
 	);
 
+    context.subscriptions.push(
+		vscode.commands.registerCommand('cursor-agent-pm.createTicketWizard', async () => {
+            await createTicketWizardCommand(ticketService);
+            provider.refresh();
+            statusBar.update();
+        })
+	);
+
 	context.subscriptions.push(
 		vscode.commands.registerCommand('cursor-agent-pm.createTicketFromClipboard', async () => {
             await createTicketFromClipboardCommand(ticketService);
@@ -48,9 +58,46 @@ export async function activate(context: vscode.ExtensionContext) {
             statusBar.update();
         })
 	);
+
+    // Placeholder for new export command
+    context.subscriptions.push(
+		vscode.commands.registerCommand('cursor-agent-pm.exportFromClipboard', async () => {
+            // Re-use createTicketFromClipboard for now, but will enhance later
+            await createTicketFromClipboardCommand(ticketService);
+            provider.refresh();
+            statusBar.update();
+        })
+	);
+
+    // Placeholder for status command
+    context.subscriptions.push(
+		vscode.commands.registerCommand('cursor-agent-pm.ticketStatus', async () => {
+            const tickets = await ticketService.getTickets();
+            const active = tickets.filter(t => t.metadata.status === 'in_progress');
+            const items = active.map(t => ({
+                label: `$(play) ${t.id}: ${t.title}`,
+                description: t.metadata.status,
+                ticketId: t.id
+            }));
+            
+            if (items.length === 0) {
+                vscode.window.showInformationMessage('No active tickets.');
+                return;
+            }
+
+            const selected = await vscode.window.showQuickPick(items, { placeHolder: 'Active Tickets' });
+            if (selected) {
+                vscode.commands.executeCommand('cursor-agent-pm.openTicket', selected.ticketId);
+            }
+        })
+	);
 	
 	context.subscriptions.push(
 		vscode.commands.registerCommand('cursor-agent-pm.copyTicketContext', (ticketId?: string) => copyTicketContextCommand(ticketService, ticketId))
+	);
+
+	context.subscriptions.push(
+		vscode.commands.registerCommand('cursor-agent-pm.loadTicket', (ticketId?: string) => loadTicketContextCommand(ticketService, ticketId))
 	);
 
 	context.subscriptions.push(

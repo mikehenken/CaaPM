@@ -145,7 +145,7 @@ ${params.description}
         await fs.promises.writeFile(path.join(ticketPath, 'Request.md'), requestContent);
 
         // Create TaskList.md
-        const taskListContent = `# Task List - [${ticketId}]
+        const taskListContent = params.tasks || `# Task List - [${ticketId}]
 
 ## Progress
 
@@ -166,6 +166,24 @@ ${params.description}
   - Status: pending
 `;
         await fs.promises.writeFile(path.join(ticketPath, 'TaskList.md'), taskListContent);
+
+        // Create Implementation_Plan.md
+        const planContent = params.plan || `# Implementation Plan - [${ticketId}]
+
+## Overview
+
+## Technical Approach
+
+`;
+        await fs.promises.writeFile(path.join(ticketPath, 'Implementation_Plan.md'), planContent);
+
+        // Create Discussion.md
+        const discussionContent = params.discussion || `# Discussion - [${ticketId}]
+
+## Decisions
+
+`;
+        await fs.promises.writeFile(path.join(ticketPath, 'Discussion.md'), discussionContent);
 
         return {
             id: ticketId,
