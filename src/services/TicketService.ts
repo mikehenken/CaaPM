@@ -76,7 +76,7 @@ export class TicketService {
         await fs.promises.rename(ticket.path, newPath);
     }
 
-    public async getTicketContent(ticketId: string, file: 'Request.md' | 'TaskList.md' | 'Discussion.md'): Promise<string | null> {
+    public async getTicketContent(ticketId: string, file: 'Request.md' | 'TaskList.md' | 'Discussion.md' | 'Implementation_Plan.md'): Promise<string | null> {
         const tickets = await this.getTickets();
         const ticket = tickets.find(t => t.id === ticketId);
         if (!ticket) {return null;}
