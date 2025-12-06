@@ -2,7 +2,7 @@
   "name": "cursor-agent-pm",
   "displayName": "Cursor Agent PM",
   "description": "In-IDE Agent Project Management Extension",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "publisher": "cursor-user",
   "repository": {
     "type": "git",
